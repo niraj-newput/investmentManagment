@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {Form, Input, File, Select} from 'formsy-react-components';
-import Formsy from "formsy-react";
 
 export default class RegisterUser extends React.Component {
   

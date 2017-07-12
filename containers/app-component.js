@@ -3,6 +3,7 @@ import React from "react";
 import  Login  from "./login.js";
 import  RegisterUser  from "./register.js";
 import { Header } from "../components/header.js";
+import { Footer } from "../components/footer.js";
 
 export class App extends React.Component {
   constructor(props) {
@@ -14,7 +15,10 @@ export class App extends React.Component {
     return (
       <div>
         <Header />
-        {this.props.children}
+        <div className="view-container">
+            {this.props.children}
+        </div>
+        <Footer/>
       </div>
     );
   }

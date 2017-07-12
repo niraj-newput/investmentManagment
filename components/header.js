@@ -11,7 +11,7 @@ export const Header = (() => {
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
           </button>
-          <a className="navbar-brand">Investment Managment</a>
+          <a className="navbar-brand"><img className="brand-img" src="../assets/images/company_logo.png" alt="brand"/></a>
        </div>
       </div>
     </nav>
