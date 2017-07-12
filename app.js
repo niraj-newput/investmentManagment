@@ -6,6 +6,7 @@ import { App } from "./containers/app-component.js";
 import  Login from "./containers/login.js";
 import  RegisterUser  from "./containers/register.js";
 import routes from "./routes.js";
+import "./assets/scss/app.scss"
 
 ReactDOM.render((
   <Router>
