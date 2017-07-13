@@ -12,24 +12,20 @@ export default class RegisterUser extends React.Component {
   
   submit(model){
     var _this = this;
-    console.log('model');
     dbConfig.findByEmail(model.email).then(function(doc) {
-      if(doc) {
+        console.log(doc.length > 0);
+      if(doc.length > 0) {
         alert('User already registered');
-      }
-    }).catch(function(err) {
-      var doc = {
-        _id: model.email,
-        obj: model
-      }
-      dbConfig.putData(doc).then(function(response) {
-        console.log('response');
-        console.log(response);
-        dbConfig.findByEmail(model.email).then(function(docs) {
-          console.log('get registered user');
-          console.log(docs);
+    } else {
+        var doc = {
+          _id: model.email,
+          obj: model
+        }
+        dbConfig.putData(doc).then(function(response) {
+          alert('Registered Successfully');
         });
-      });
+    }
+    }).catch(function(err) {
     });
   }
 

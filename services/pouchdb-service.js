@@ -22,11 +22,7 @@ export const dbConfig = {
   getData: function(id) {
     return db.get(id);
   },
-  getAllData: function() {
-    
-  },
   findByEmail: function(email) {
-    console.log(email);
   return  db.find({selector: {'email': email}});
   }
 }

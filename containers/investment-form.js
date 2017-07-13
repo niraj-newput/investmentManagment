@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {Form, Input, File} from 'formsy-react-components';
 import Formsy from "formsy-react";
+import { store } from "../store.js"; 
 import "../assets/scss/invest-form.scss";
 
 export default class InvestmentForm extends React.Component {
@@ -20,7 +21,7 @@ export default class InvestmentForm extends React.Component {
         </div>
         <div className="row border-bottom">
           <div className="col-md-4 border-right"><span>Name Of Employee</span></div>
-          <div className="col-md-8 text-center"><span>Anjana</span></div>
+          <div className="col-md-8 text-center">{store.getState().employee ? store.getState().employee.employee.obj.email : 'Dummy'}</div>
         </div>
         <div className="row border-bottom">
           <div className="col-md-4 border-right">
