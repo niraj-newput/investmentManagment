@@ -10,8 +10,6 @@ export class App extends React.Component {
     super(props);
   }
   render() {
-    console.log('app props');
-    console.log(this.props);
     return (
       <div>
         <Header />

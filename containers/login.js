@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Redirect ,hashHistory} from 'react-router-dom';
+
 import Formsy from "formsy-react";
 import { Form, Input } from 'formsy-react-components';
 
@@ -18,7 +19,9 @@ class Login extends React.Component {
   }
   
   submit(user) {
-    this.props.history.push("/investment-form");;
+    console.log('log in');
+    console.log(this);
+    this.props.history.push("/investment-form");
   }
   
   render() {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {Form, Input, File, Select} from 'formsy-react-components';
+import { dbConfig } from '../services/pouchdb-service.js';
 
 export default class RegisterUser extends React.Component {
   
@@ -10,7 +11,26 @@ export default class RegisterUser extends React.Component {
   }
   
   submit(model){
-    
+    var _this = this;
+    console.log('model');
+    dbConfig.findByEmail(model.email).then(function(doc) {
+      if(doc) {
+        alert('User already registered');
+      }
+    }).catch(function(err) {
+      var doc = {
+        _id: model.email,
+        obj: model
+      }
+      dbConfig.putData(doc).then(function(response) {
+        console.log('response');
+        console.log(response);
+        dbConfig.findByEmail(model.email).then(function(docs) {
+          console.log('get registered user');
+          console.log(docs);
+        });
+      });
+    });
   }
 
   render() {
@@ -22,7 +42,7 @@ export default class RegisterUser extends React.Component {
               <div className="form-group text-right">
                 <Link to="/login">Back To LogIn</Link>
               </div>
-              <Form  noValidate>
+              <Form  onValidSubmit={this.submit} noValidate>
                 <div className="form-group">
                   <Input name="email" label="Email address" validations="isEmail" placeholder="Email" value="" required/>
                 </div>
