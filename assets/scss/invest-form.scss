@@ -1,13 +1,22 @@
+<<<<<<< Updated upstream
 .form-container {
     margin-top: 50px;
+=======
+.parent-container {
+>>>>>>> Stashed changes
     border: 1px solid #000;
      div {
-         min-height: 20px;
+         min-height: 30px;
+         text-align: center;
      }
     .border-bottom {
         border-bottom: 1px solid lightgrey;
     }
     .border-right {
         border-right: 1px solid lightgrey;
+    }
+    .form-control {
+      border: 0px solid #CCC;
+      border-radius: 0px;
     }
 }
