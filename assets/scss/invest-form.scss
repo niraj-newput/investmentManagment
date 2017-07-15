@@ -1,12 +1,8 @@
-<<<<<<< Updated upstream
-.form-container {
-    margin-top: 50px;
-=======
 .parent-container {
->>>>>>> Stashed changes
+    margin: 50px auto 30px;
     border: 1px solid #000;
      div {
-         min-height: 30px;
+         min-height: 40px;
          text-align: center;
      }
     .border-bottom {
@@ -14,9 +10,5 @@
     }
     .border-right {
         border-right: 1px solid lightgrey;
-    }
-    .form-control {
-      border: 0px solid #CCC;
-      border-radius: 0px;
     }
 }

@@ -7,6 +7,7 @@ import {store} from "./store.js";
 import Login from './containers/login.js';
 import RegisterUser from './containers/register.js';
 import InvestmentForm from './containers/investment-form.js';
+import Attachment from './components/attachment-modal.js';
 console.log(store.getState());
 const routes = (
     
