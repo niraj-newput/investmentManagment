@@ -4,16 +4,15 @@ import {Form, Input, File, Select} from 'formsy-react-components';
 import { dbConfig } from '../services/pouchdb-service.js';
 
 export default class RegisterUser extends React.Component {
-  
+
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
   }
-  
+
   submit(model){
     var _this = this;
     dbConfig.findByEmail(model.email).then(function(doc) {
-        console.log(doc.length > 0);
       if(doc.length > 0) {
         alert('User already registered');
     } else {

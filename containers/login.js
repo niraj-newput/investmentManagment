@@ -4,7 +4,7 @@ import Formsy from "formsy-react";
 import { connect } from 'react-redux';
 import { Form, Input } from 'formsy-react-components';
 import { employeeDetail } from '../actions/employee-action.js';
-import { dbConfig } from '../services/pouchdb-service.js'; 
+import { dbConfig } from '../services/pouchdb-service.js';
 import "../assets/scss/login-form.scss";
 import {Helmet} from "react-helmet";
 
@@ -17,10 +17,10 @@ class Login extends React.Component {
       user: {}
     }
   }
-  
+
   changeHandler(event) {
   }
-  
+
   submit(user) {
       var parentInstance = this;
       dbConfig.getData(user.email).then(function(doc) {
@@ -34,7 +34,7 @@ class Login extends React.Component {
         console.log(err);
       });
   }
-  
+
   render() {
     return (
         <div>
@@ -62,7 +62,6 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
   return {
     employee: state.employee
   };

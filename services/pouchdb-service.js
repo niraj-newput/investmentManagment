@@ -24,6 +24,9 @@ export const dbConfig = {
   },
   findByEmail: function(email) {
   return  db.find({selector: {'email': email}});
+  },
+  getAttachment: function(id, attachment, revision) {
+  return(db.getAttachment(id, attachment, { _rev: revision}));
   }
-}
 
+}

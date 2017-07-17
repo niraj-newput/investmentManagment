@@ -5,11 +5,23 @@ export class AttachmentModal extends React.Component {
   constructor(props) {
     super(props);
   }
+
+  showAttachments() {
+    if(this.props.files) {
+      var attachments = [];
+      for(var i = 0; i < this.props.files.length; i++) {
+        attachments.push(<div><a href={ this.props.files[i]} target="_blank"> attachments</a></div>);
+      }
+      return attachments;
+    }
+    return "Attachments are not available";
+  }
+
   render() {
     return (
-      <Modal 
-        size = "modal-lg"
-        isOpen = {this.props.open} 
+      <Modal
+        size = "modal-md"
+        isOpen = {this.props.open}
         contentLabel = "Modal">
         <ModalHeader>
           <ModalClose onClick={this.props.modalClose}/>
@@ -18,8 +30,7 @@ export class AttachmentModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <a href="">Attachment1</a>
-          <a href="">Attachment2</a>
+          {this.showAttachments()}
         </ModalBody>
         <ModalFooter>
           <button onClick={this.props.modalClose} className="btn btn-warning">Close</button>
