@@ -30,11 +30,9 @@ export default class InvestmentForm extends React.Component {
   }
 
   componentDidMount() {
-    console.log('Investment ');
-    console.log(this);
-    if(!store.getState().employee) {
-      this.props.history.push("/login");
-    }
+      if(!store.getState().employee) {
+        this.props.history.push("/login");
+      }
       var _this = this;
       var email = store.getState().employee.employee.obj.email;
       dbConfig.getData(email).then(function(doc) {
@@ -64,16 +62,28 @@ export default class InvestmentForm extends React.Component {
             _this.setState({totalBlockData: totalInfo});
          }
          if(doc._attachments){
-           var attachment = Object.keys(doc._attachments);
-           var attachmentArray = [];
-           for(var i = 0; i < attachment.length; i++) {
-             dbConfig.getAttachment(doc._id, attachment[i], doc._rev).then(function(blob) {
-               var url =  URL.createObjectURL(blob);
-               attachmentArray.push(url);
+           var attachments = Object.keys(doc._attachments);
+           var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
+           for(var i = 0; i < attachments.length; i++) {
+             var file = attachments[i];
+             dbConfig.getAttachment(doc._id, file, doc._rev).then(function(blob) {
+                 var url =  URL.createObjectURL(blob);
+                 if(file.indexOf('q1')) {
+                     q1Attachments.push({fileName: file, path: url });
+                 } else if(file.indexOf('q2')) {
+                     q2Attachments.push({fileName: file, path: url });
+                 } else if(file.indexOf('q3')) {
+                     q3Attachments.push({fileName: file, path: url });
+                 } else {
+                     q4Attachments.push({fileName: file, path: url });
+                 }
              });
            }
            _this.setState({
-             attachedFiles: attachmentArray
+             q1Attachments: q1Attachments,
+             q2Attachments: q2Attachments,
+             q3Attachments: q3Attachments,
+             q4Attachments: q4Attachments
            });
          }
     });
@@ -157,7 +167,7 @@ export default class InvestmentForm extends React.Component {
     Promise.all(promises).then(function(value) {
       var attachmentObj = {};
       for(var i = 0; i < value.length; i++) {
-        attachmentObj[value[i]['name']] = value[i];
+        attachmentObj[quaterno + '.' +value[i]['name']] = value[i];
       }
       _this.state.user['_attachments'] = attachmentObj;
       dbConfig.putData(_this.state.user).then(function(result) {
@@ -338,19 +348,19 @@ export default class InvestmentForm extends React.Component {
               <div className="col-md-2 border-right"></div>
               <div className="col-md-1 border-right">
                 <a onClick={this.attachmentModal}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.attachedFiles ? this.state.attachedFiles : null}/>
+                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.q1Attachments ? this.state.q1Attachments : null}/>
               </div>
               <div className="col-md-1 border-right">
                 <a onClick={this.attachmentModal}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.attachedFiles ? this.state.attachedFiles : null}/>
+                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.q2Attachments ? this.state.q2Attachments : null}/>
               </div>
               <div className="col-md-1 border-right">
                 <a onClick={this.attachmentModal}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.attachedFiles ? this.state.attachedFiles : null}/>
+                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.q3Attachments ? this.state.q3Attachments : null}/>
               </div>
               <div className="col-md-1 border-right">
                 <a onClick={this.attachmentModal}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.attachedFiles ? this.state.attachedFiles : null}/>
+                <AttachmentModal open={this.state.attachmentModal} modalClose={this.closeModal} files={this.state.q4Attachments ? this.state.q4Attachments : null}/>
               </div>
             </div>
           </div>

@@ -8,10 +8,10 @@ export class AttachmentModal extends React.Component {
 
   showAttachments() {
     if(this.props.files) {
-      var attachments = [];
-      for(var i = 0; i < this.props.files.length; i++) {
-        attachments.push(<div><a href={ this.props.files[i]} target="_blank"> attachments</a></div>);
-      }
+     var attachments = [];
+     this.props.files.map((file) => {
+          attachments.push(<div key={Math.random()}><a href={file.path} target="_blank">{file.fileName}</a></div>);
+      });
       return attachments;
     }
     return "Attachments are not available";
@@ -20,7 +20,7 @@ export class AttachmentModal extends React.Component {
   render() {
     return (
       <Modal
-        size = "modal-md"
+        size = "modal-lg"
         isOpen = {this.props.open}
         contentLabel = "Modal">
         <ModalHeader>
