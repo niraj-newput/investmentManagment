@@ -7,17 +7,29 @@ export class AttachmentModal extends React.Component {
   }
 
   showAttachments() {
+    var attachments  ;
     if(this.props.files) {
-     var attachments = [];
-     this.props.files.map((file) => {
-          attachments.push(<div key={Math.random()}><a href={file.path} target="_blank">{file.fileName}</a></div>);
-      });
-      return attachments;
+      attachments = this.props.files.map(function(file) {
+       return (<div key={Math.random()}><a href={file.url} >{file.name}</a></div>);
+     });
+    return attachments;
     }
-    return "Attachments are not available";
+    return "Attachment not available";
   }
 
   render() {
+    var attachments ;
+    if(this.props.files){
+       attachments = this.props.files.map(file => {
+       return (
+         <div key={Math.random()}>
+           <a href={file.url} target="_blank"> {file.name}</a>
+         </div>
+      );
+    });
+    }
+
+
     return (
       <Modal
         size = "modal-lg"
@@ -29,8 +41,7 @@ export class AttachmentModal extends React.Component {
           <span>Quaterly Attachments</span>
           </ModalTitle>
         </ModalHeader>
-        <ModalBody>
-          {this.showAttachments()}
+        <ModalBody>{this.showAttachments()}
         </ModalBody>
         <ModalFooter>
           <button onClick={this.props.modalClose} className="btn btn-warning">Close</button>

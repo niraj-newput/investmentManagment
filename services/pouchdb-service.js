@@ -27,6 +27,8 @@ export const dbConfig = {
   },
   getAttachment: function(id, attachment, revision) {
   return(db.getAttachment(id, attachment, { _rev: revision}));
+  },
+  deleteAttachment: function(id, attachment, revision) {
+    return (db.removeAttachment(id, attachment, revision));
   }
-
 }

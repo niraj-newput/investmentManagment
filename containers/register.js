@@ -22,6 +22,7 @@ export default class RegisterUser extends React.Component {
         }
         dbConfig.putData(doc).then(function(response) {
           alert('Registered Successfully');
+          _this.props.history.push('/login');
         });
     }
     }).catch(function(err) {
