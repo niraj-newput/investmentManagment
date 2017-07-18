@@ -1,29 +1,42 @@
 import React from "react";
 import  Login  from "./login.js";
 import  RegisterUser  from "./register.js";
-import { store } from "../store.js";
 import { Header } from "../components/header.js";
 import { Footer } from "../components/footer.js";
+import { connect } from 'react-redux';
+import { employeeDetail, removeUser } from '../actions/employee-action.js';
 import {Helmet} from "react-helmet";
+import localForage from "localforage";
 
-export class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.logout = this.logout.bind(this);
   }
   
   logout() {
-      store.getState().employee = null;
+      this.props.dispatch(removeUser());
+      localForage.removeItem('user');
+      location.reload();
+  }
+  
+  componentDidMount() {
+      var self = this;
+      localForage.getItem('user').then(function(value){
+          if(value) {
+             self.props.dispatch(employeeDetail(value)); 
+          }
+      });
   }
   render() {
     return (
       <div>
         <Helmet>
             <meta charSet="utf-8" />
-            <title>My Title</title>
-            <meta name="description" content="Helmet application" />
+            <title>React App</title>
+            <meta name="description" content="App header" />
         </Helmet>
-        <Header logout={this.logout}/>
+        <Header logout={this.logout} employee={this.props.employee}/>
         <div className="view-container">
             {this.props.children}
         </div>
@@ -32,3 +45,10 @@ export class App extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    employee: state.employee
+  };
+};
+export default connect(mapStateToProps)(App);

@@ -4,11 +4,13 @@ import {Form, Input, File} from 'formsy-react-components';
 import {FormGroup, FormControl,Button} from 'react-bootstrap';
 import Formsy from "formsy-react";
 import {Helmet} from "react-helmet";
-import { store } from "../store.js";
+import {store} from "../store.js";
 import {DeclearedModal} from "../components/decleared-modal.js";
+import { employeeDetail } from '../actions/employee-action.js';
 import {AttachmentModal} from "../components/attachment-modal.js";
 import { QuaterlyModal } from "../components/quaterly-modal.js";
 import { dbConfig } from '../services/pouchdb-service.js';
+import localForage from "localforage";
 import "../assets/scss/invest-form.scss";
 
 export default class InvestmentForm extends React.Component {
@@ -47,68 +49,69 @@ export default class InvestmentForm extends React.Component {
 
   }
   componentDidMount() {
-    if(!store.getState().employee) {
-      this.props.history.push("/login");
-    }
-    var email = store.getState().employee.employee.obj.email;
-    var _this = this;
-    dbConfig.getData(email).then(function(doc) {
-     _this.setState({
-       user: doc,
-       declearedInfo: doc.declareData ? doc.declareData : null,
-       q1: doc.q1 ? doc.q1 : null,
-       q2: doc.q2 ? doc.q2 : null,
-       q3: doc.q3 ? doc.q3 : null,
-       q4: doc.q4 ? doc.q4 : null
-     });
-     var totalInfo = {};
-     var keys;
-     if(_this.state.q1) {
-        keys = Object.keys(_this.state.q1);
-        for (var i = 0; i < keys.length; i++) {
-          if(_this.state.q1 && !_this.state.q2 && ! _this.state.q3) {
-            totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]);
-          } else if(_this.state.q1 && _this.state.q2 && ! _this.state.q3) {
-              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]);
-          } else if(_this.state.q1 && _this.state.q2 && _this.state.q3) {
-              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]);
-          } else if(_this.state.q1 && _this.state.q2 && _this.state.q3 && _this.state.q4) {
-              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]) + parseInt(_this.state.q4[keys[i]]);
-          }
-        }
-        _this.setState({totalBlockData: totalInfo});
-     }
-     if(doc._attachments) {
-       var promises = [];
-       var attachments = Object.keys(doc._attachments);
-       var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
-       for(var i = 0; i < attachments.length; i++) {
-         var file = attachments[i];
-         promises.push(_this.fileRead(doc._id, file, doc._rev));
-    }
-      Promise.all(promises).then(function(value) {
-        for(var i = 0; i < value.length; i++) {
-          var file = value[i];
-
-          if(file.name.indexOf('q1') != -1) {
-               q1Attachments.push({name: file.name, url: file.url });
-           } else if(file.name.indexOf('q2') != -1 ) {
-               q2Attachments.push({name: file.name, url: file.url});
-           } else if(file.name.indexOf('q3') != -1 ) {
-               q3Attachments.push({name: file.name, url: file.url });
-           } else if(file.name.indexOf('q4') != -1) {
-               q4Attachments.push({name: file.name, url: file.url });
+      var _this = this;
+      localForage.getItem('user').then(function(value){
+        if(value) {
+          store.dispatch(employeeDetail(value));
+          dbConfig.getData(value.obj.email).then(function(doc) {
+           _this.setState({
+             user: doc,
+             declearedInfo: doc.declareData ? doc.declareData : null,
+             q1: doc.q1 ? doc.q1 : null,
+             q2: doc.q2 ? doc.q2 : null,
+             q3: doc.q3 ? doc.q3 : null,
+             q4: doc.q4 ? doc.q4 : null
+           });
+           var totalInfo = {};
+           var keys;
+           if(_this.state.q1) {
+              keys = Object.keys(_this.state.q1);
+              for (var i = 0; i < keys.length; i++) {
+                if(_this.state.q1 && !_this.state.q2 && ! _this.state.q3) {
+                  totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]);
+                } else if(_this.state.q1 && _this.state.q2 && ! _this.state.q3) {
+                    totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]);
+                } else if(_this.state.q1 && _this.state.q2 && _this.state.q3) {
+                    totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]);
+                } else if(_this.state.q1 && _this.state.q2 && _this.state.q3 && _this.state.q4) {
+                    totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]) + parseInt(_this.state.q4[keys[i]]);
+                }
+              }
+              _this.setState({totalBlockData: totalInfo});
            }
-        }
-         _this.setState({
-           q1Attachments: q1Attachments,
-           q2Attachments: q2Attachments,
-           q3Attachments: q3Attachments,
-           q4Attachments: q4Attachments
+           if(doc._attachments) {
+             var promises = [];
+             var attachments = Object.keys(doc._attachments);
+             var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
+             for(var i = 0; i < attachments.length; i++) {
+               var file = attachments[i];
+               promises.push(_this.fileRead(doc._id, file, doc._rev));
+          }
+            Promise.all(promises).then(function(value) {
+              for(var i = 0; i < value.length; i++) {
+                var file = value[i];
+
+                if(file.name.indexOf('q1') != -1) {
+                     q1Attachments.push({name: file.name, url: file.url });
+                 } else if(file.name.indexOf('q2') != -1 ) {
+                     q2Attachments.push({name: file.name, url: file.url});
+                 } else if(file.name.indexOf('q3') != -1 ) {
+                     q3Attachments.push({name: file.name, url: file.url });
+                 } else if(file.name.indexOf('q4') != -1) {
+                     q4Attachments.push({name: file.name, url: file.url });
+                 }
+              }
+               _this.setState({
+                 q1Attachments: q1Attachments,
+                 q2Attachments: q2Attachments,
+                 q3Attachments: q3Attachments,
+                 q4Attachments: q4Attachments
+               });
+            });
+          }
          });
-      });
-    }
-   });
+       }
+    });
   }
 
   closeModal() {
@@ -250,7 +253,7 @@ export default class InvestmentForm extends React.Component {
             </div>
             <div className="row border-bottom">
               <div className="col-md-3 border-right"><span>Name Of Employee</span></div>
-              <div className="col-md-9 text-center">{store.getState().employee ? store.getState().employee.employee.obj.email : 'Dummy'}</div>
+              <div className="col-md-9 text-center">{store.getState().employee ? store.getState().employee.employee.obj.user_name : 'Dummy'}</div>
             </div>
             <div className="row border-bottom">
               <div className="col-md-3"></div>

@@ -1,5 +1,6 @@
+@import "variables";
 #header {
-    background-color: #ffe5e5;
+    background-color: $blue-color;
     a {
         padding: 10px 15px;
     }
@@ -27,7 +28,7 @@
 }
 .footer {
     text-align: center;
-    background-color: #ffe5e5;
+    background-color: $blue-color;
     font-size: 15px;
     padding: 10px;
 }
