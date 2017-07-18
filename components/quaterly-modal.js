@@ -17,7 +17,6 @@ export class QuaterlyModal extends React.Component {
      });
     return attachments;
   }
-    return "Attachment not available";
   }
 
 
@@ -34,7 +33,7 @@ export class QuaterlyModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.refs.dec_modal.refs.formsy.reset();}}  ref="dec_modal" noValidate >
+          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); }}  ref="dec_modal" noValidate >
             <Input name="hm_ln" label="Home Loan interest" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" value={this.props.qObj ? this.props.qObj["hm_ln"] : ''} required/>
             <Input name="med" label="Medicals Bills" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" value={this.props.qObj ? this.props.qObj["med"] : ''} required/>
             <div>

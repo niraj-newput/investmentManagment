@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from 'react-router-dom';
 import  Login  from "./login.js";
 import  RegisterUser  from "./register.js";
 import { Header } from "../components/header.js";
@@ -13,20 +14,20 @@ class App extends React.Component {
     super(props);
     this.logout = this.logout.bind(this);
   }
-  
+
   logout() {
-      this.props.dispatch(removeUser());
-      localForage.removeItem('user');
-      location.reload();
+    localForage.clear();
+    this.props.dispatch(removeUser());
+    this.props.history.push('/login');
   }
-  
-  componentDidMount() {
-      var self = this;
-      localForage.getItem('user').then(function(value){
-          if(value) {
-             self.props.dispatch(employeeDetail(value)); 
-          }
-      });
+
+  componentWillMount() {
+    var self = this;
+    localForage.getItem('user').then(function(value){
+      if(value) {
+         self.props.dispatch(employeeDetail(value));
+      }
+    });
   }
   render() {
     return (
@@ -51,4 +52,4 @@ const mapStateToProps = (state) => {
     employee: state.employee
   };
 };
-export default connect(mapStateToProps)(App);
+export default withRouter(connect(mapStateToProps)(App));

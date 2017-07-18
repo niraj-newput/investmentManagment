@@ -27,6 +27,7 @@ export default class InvestmentForm extends React.Component {
     this.qFourModal = this.qFourModal.bind(this);
     this.quaterlyData = this.quaterlyData.bind(this);
     this.deleteAttachment = this.deleteAttachment.bind(this);
+    this.loadUserData = this.loadUserData.bind(this);
     this.state = {
       declearedModal: false
     }
@@ -36,82 +37,87 @@ export default class InvestmentForm extends React.Component {
     return new Promise(function(resolve, reject) {
       var fileObj = {};
       fileObj['name'] = file;
-
       dbConfig.getAttachment(id, file, rev).then(function(blob) {
           var url =  URL.createObjectURL(blob);
           fileObj['url'] = url;
+          fileObj['type'] = blob.type;
           resolve(fileObj);
         });
     });
   }
 
-  init() {
-
-  }
   componentDidMount() {
       var _this = this;
-      localForage.getItem('user').then(function(value){
+      localForage.getItem('user').then(function(value) {
         if(value) {
+          _this.loadUserData(value);
           store.dispatch(employeeDetail(value));
-          dbConfig.getData(value.obj.email).then(function(doc) {
-           _this.setState({
-             user: doc,
-             declearedInfo: doc.declareData ? doc.declareData : null,
-             q1: doc.q1 ? doc.q1 : null,
-             q2: doc.q2 ? doc.q2 : null,
-             q3: doc.q3 ? doc.q3 : null,
-             q4: doc.q4 ? doc.q4 : null
-           });
-           var totalInfo = {};
-           var keys;
-           if(_this.state.q1) {
-              keys = Object.keys(_this.state.q1);
-              for (var i = 0; i < keys.length; i++) {
-                if(_this.state.q1 && !_this.state.q2 && ! _this.state.q3) {
-                  totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]);
-                } else if(_this.state.q1 && _this.state.q2 && ! _this.state.q3) {
-                    totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]);
-                } else if(_this.state.q1 && _this.state.q2 && _this.state.q3) {
-                    totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]);
-                } else if(_this.state.q1 && _this.state.q2 && _this.state.q3 && _this.state.q4) {
-                    totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]) + parseInt(_this.state.q4[keys[i]]);
-                }
-              }
-              _this.setState({totalBlockData: totalInfo});
-           }
-           if(doc._attachments) {
-             var promises = [];
-             var attachments = Object.keys(doc._attachments);
-             var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
-             for(var i = 0; i < attachments.length; i++) {
-               var file = attachments[i];
-               promises.push(_this.fileRead(doc._id, file, doc._rev));
-          }
-            Promise.all(promises).then(function(value) {
-              for(var i = 0; i < value.length; i++) {
-                var file = value[i];
-
-                if(file.name.indexOf('q1') != -1) {
-                     q1Attachments.push({name: file.name, url: file.url });
-                 } else if(file.name.indexOf('q2') != -1 ) {
-                     q2Attachments.push({name: file.name, url: file.url});
-                 } else if(file.name.indexOf('q3') != -1 ) {
-                     q3Attachments.push({name: file.name, url: file.url });
-                 } else if(file.name.indexOf('q4') != -1) {
-                     q4Attachments.push({name: file.name, url: file.url });
-                 }
-              }
-               _this.setState({
-                 q1Attachments: q1Attachments,
-                 q2Attachments: q2Attachments,
-                 q3Attachments: q3Attachments,
-                 q4Attachments: q4Attachments
-               });
-            });
-          }
-         });
-       }
+        }else {
+          _this.loadUserData(store.getState().employee.employee);
+          localForage.setItem('user', store.getState().employee.employee);
+        }
     });
+  }
+
+  loadUserData(value) {
+    var _this = this;
+    dbConfig.getData(value.obj.email).then(function(doc) {
+     _this.setState({
+       user: doc,
+       declearedInfo: doc.declareData ? doc.declareData : null,
+       q1: doc.q1 ? doc.q1 : null,
+       q2: doc.q2 ? doc.q2 : null,
+       q3: doc.q3 ? doc.q3 : null,
+       q4: doc.q4 ? doc.q4 : null
+     });
+     var totalInfo = {};
+     var keys;
+     if(_this.state.q1) {
+        keys = Object.keys(_this.state.q1);
+        for (var i = 0; i < keys.length; i++) {
+          if(_this.state.q1 && !_this.state.q2 && ! _this.state.q3) {
+            totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]);
+          } else if(_this.state.q1 && _this.state.q2 && ! _this.state.q3) {
+              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]);
+          } else if(_this.state.q1 && _this.state.q2 && _this.state.q3) {
+              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]);
+          } else if(_this.state.q1 && _this.state.q2 && _this.state.q3 && _this.state.q4) {
+              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]) + parseInt(_this.state.q4[keys[i]]);
+          }
+        }
+        _this.setState({totalBlockData: totalInfo});
+     }
+     if(doc._attachments) {
+       var promises = [];
+       var attachments = Object.keys(doc._attachments);
+       var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
+       for(var i = 0; i < attachments.length; i++) {
+         var file = attachments[i];
+         promises.push(_this.fileRead(doc._id, file, doc._rev));
+    }
+      Promise.all(promises).then(function(value) {
+        for(var i = 0; i < value.length; i++) {
+          var file = value[i];
+
+          if(file.name.indexOf('q1') != -1) {
+               q1Attachments.push({name: file.name, url: file.url, type: file.type });
+           } else if(file.name.indexOf('q2') != -1 ) {
+               q2Attachments.push({name: file.name, url: file.url, type: file.type});
+           } else if(file.name.indexOf('q3') != -1 ) {
+               q3Attachments.push({name: file.name, url: file.url, type: file.type });
+           } else if(file.name.indexOf('q4') != -1) {
+               q4Attachments.push({name: file.name, url: file.url, type: file.type });
+           }
+        }
+         _this.setState({
+           q1Attachments: q1Attachments,
+           q2Attachments: q2Attachments,
+           q3Attachments: q3Attachments,
+           q4Attachments: q4Attachments
+         });
+      });
+    }
+   });
   }
 
   closeModal() {
@@ -216,10 +222,17 @@ export default class InvestmentForm extends React.Component {
     _this.state.user[quaterno] = model;
     Promise.all(promises).then(function(value) {
       var attachmentObj = {};
-      for(var i = 0; i < value.length; i++) {
-        attachmentObj[quaterno + '.' +value[i]['name']] = value[i];
+      if(  _this.state.user._attachments) {
+        for(var i = 0; i < value.length; i++) {
+          _this.state.user._attachments[quaterno + '.' + value[i]['name']] = value[i];
+        }
+
+      }else {
+        for(var i = 0; i < value.length; i++) {
+          attachmentObj[quaterno + '.' +value[i]['name']] = value[i];
+        }
+        _this.state.user['_attachments'] = attachmentObj;
       }
-      _this.state.user['_attachments'] = attachmentObj;
       dbConfig.putData(_this.state.user).then(function(result) {
         _this.closeModal();
         _this.componentDidMount();

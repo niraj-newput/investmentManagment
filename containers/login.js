@@ -12,29 +12,21 @@ import localForage from "localforage";
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.changeHandler = this.changeHandler.bind(this);
     this.submit  = this.submit.bind(this);
-    this.state = {
-      user: {}
-    }
   }
 
-  changeHandler(event) {
-  }
-  
   submit(user) {
-      var parentInstance = this;
-      dbConfig.getData(user.email).then(function(doc) {
-        if(doc.obj.email == user.email && doc.obj.password == user.password ) {
-          store.dispatch(employeeDetail(doc));
-          localForage.setItem('user', doc);
-          parentInstance.props.history.push("/investment-form");
-        } else {
-          alert("Email or password do not match");
-        }
-      }).catch(function(err) {
-        console.log(err);
-      });
+    var parentInstance = this;
+    dbConfig.getData(user.email).then(function(doc) {
+      if(doc.obj.email == user.email && doc.obj.password == user.password ) {
+        parentInstance.props.history.push("/investment-form");
+        store.dispatch(employeeDetail(doc));
+      } else {
+        alert("Email or password do not match");
+      }
+    }).catch(function(err) {
+      console.log(err);
+    });
   }
 
   render() {

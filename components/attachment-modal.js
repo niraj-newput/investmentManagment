@@ -7,10 +7,10 @@ export class AttachmentModal extends React.Component {
   }
 
   showAttachments() {
-    var attachments  ;
-    if(this.props.files) {
+    var attachments;
+    if(this.props.files ) {
       attachments = this.props.files.map(function(file) {
-       return (<div key={Math.random()}><a href={file.url} >{file.name}</a></div>);
+       return (<div key={Math.random()}><a href={file.url} target="_blank">{file.name}</a> </div>);
      });
     return attachments;
     }
@@ -18,18 +18,6 @@ export class AttachmentModal extends React.Component {
   }
 
   render() {
-    var attachments ;
-    if(this.props.files){
-       attachments = this.props.files.map(file => {
-       return (
-         <div key={Math.random()}>
-           <a href={file.url} target="_blank"> {file.name}</a>
-         </div>
-      );
-    });
-    }
-
-
     return (
       <Modal
         size = "modal-lg"
