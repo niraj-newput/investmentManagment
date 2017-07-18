@@ -7,7 +7,6 @@ import {Helmet} from "react-helmet";
 import {store} from "../store.js";
 import {DeclearedModal} from "../components/decleared-modal.js";
 import { employeeDetail } from '../actions/employee-action.js';
-import {AttachmentModal} from "../components/attachment-modal.js";
 import { QuaterlyModal } from "../components/quaterly-modal.js";
 import { dbConfig } from '../services/pouchdb-service.js';
 import localForage from "localforage";
@@ -415,27 +414,6 @@ export default class InvestmentForm extends React.Component {
               <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.edu_ln : null }</span></div>
               <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.edu_ln : null }</span></div>
               <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.edu_ln : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right">Attachments</div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-1 border-right">
-                <a onClick={() => this.attachmentModal('q1')}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModalQ1} modalClose={this.closeModal} files={this.state.q1Attachments ? this.state.q1Attachments : null}/>
-              </div>
-              <div className="col-md-1 border-right">
-                <a onClick={() => this.attachmentModal('q2')}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModalQ2} modalClose={this.closeModal} files={this.state.q2Attachments ? this.state.q2Attachments : null}/>
-              </div>
-              <div className="col-md-1 border-right">
-                <a onClick={() => this.attachmentModal('q3')}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModalQ3} modalClose={this.closeModal} files={this.state.q3Attachments ? this.state.q3Attachments : null}/>
-              </div>
-              <div className="col-md-1 border-right">
-                <a onClick={() => this.attachmentModal('q4')}>View Attachment</a>
-                <AttachmentModal open={this.state.attachmentModalQ4} modalClose={this.closeModal} files={this.state.q4Attachments ? this.state.q4Attachments : null}/>
-              </div>
             </div>
           </div>
 

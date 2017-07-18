@@ -13,7 +13,17 @@ export class QuaterlyModal extends React.Component {
     var attachments  ;
     if(this.props.files) {
       attachments = this.props.files.map(function(file) {
-       return (<div key={Math.random()}><a href={file.url} >{file.name.replace(_this.props.quaterNo+ ".", "")}</a> <i className="fa fa-trash-o fa-2x" onClick={(event) => _this.props.deleteFile(file.name)} aria-hidden="true" value="niraj"></i></div>);
+       return (<div key={Math.random()} className="row">
+         <div className="col-sm-8">
+           <span>{file.name.replace(_this.props.quaterNo+ ".", "")}</span>
+         </div>
+         <div className="col-sm-2">
+          <a href={file.url} target="_blank">View</a>
+         </div>
+         <div className="col-sm-2">
+           <i className="fa fa-trash-o fa-2x" onClick={(event) => _this.props.deleteFile(file.name)} aria-hidden="true" value="niraj"></i>
+         </div>
+       </div>);
      });
     return attachments;
   }
