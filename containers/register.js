@@ -16,13 +16,15 @@ export default class RegisterUser extends React.Component {
       if(doc.length > 0) {
         alert('User already registered');
     } else {
+        model['loggedIn'] = true;
         var doc = {
           _id: model.email,
           obj: model
         }
         dbConfig.putData(doc).then(function(response) {
+            console.log(doc);
           alert('Registered Successfully');
-          _this.props.history.push('/login');
+          _this.props.history.push('/investment-form');
         });
     }
     }).catch(function(err) {

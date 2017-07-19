@@ -1,6 +1,6 @@
 // routes.js
 import React from 'react';
-import { Route, Redirect, withRouter } from 'react-router-dom';
+import { Route} from 'react-router-dom';
 import  App from './containers/app-component.js';
 import { Provider } from 'react-redux';
 import {store} from "./store.js";
