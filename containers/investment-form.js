@@ -1,16 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import {Form, Input, File} from 'formsy-react-components';
-import {FormGroup, FormControl,Button} from 'react-bootstrap';
-import Formsy from "formsy-react";
-import {Helmet} from "react-helmet";
-import {store} from "../store.js";
-import {DeclearedModal} from "../components/decleared-modal.js";
+import Formsy from 'formsy-react';
+import { Helmet } from 'react-helmet';
+import { store } from '../store.js';
+import { DeclearedModal } from '../components/decleared-modal.js';
 import { employeeDetail } from '../actions/employee-action.js';
-import { QuaterlyModal } from "../components/quaterly-modal.js";
+import { QuaterlyModal } from '../components/quaterly-modal.js';
 import { dbConfig } from '../services/pouchdb-service.js';
-import localForage from "localforage";
-import "../assets/scss/invest-form.scss";
+import localForage from 'localforage';
+import '../assets/scss/invest-form.scss';
 
 export default class InvestmentForm extends React.Component {
 
@@ -25,7 +22,8 @@ export default class InvestmentForm extends React.Component {
     this.deleteAttachment = this.deleteAttachment.bind(this);
     this.loadUserData = this.loadUserData.bind(this);
     this.state = {
-      declearedModal: false
+      declearedModal: false,
+      msg: 'hidden'
     }
   }
 
@@ -34,30 +32,28 @@ export default class InvestmentForm extends React.Component {
       var fileObj = {};
       fileObj['name'] = file;
       dbConfig.getAttachment(id, file, rev).then(function(blob) {
-          var url =  URL.createObjectURL(blob);
-          fileObj['url'] = url;
-          fileObj['type'] = blob.type;
-          resolve(fileObj);
-        });
+        fileObj['url'] = URL.createObjectURL(blob);
+        fileObj['type'] = blob.type;
+        resolve(fileObj);
+      });
     });
   }
 
   componentDidMount() {
-      var self = this;
-      localForage.getItem('user').then(function(value) {
-        if(value) {
-          self.loadUserData(value);
-          store.dispatch(employeeDetail(value));
-        }else {
-          self.loadUserData(store.getState().employee.employee);
-          localForage.setItem('user', store.getState().employee.employee);
-        }
+    var self = this;
+    localForage.getItem('user').then(function(value) {
+      if(value) {
+        self.loadUserData(value);
+        store.dispatch(employeeDetail(value));
+      }else {
+        self.loadUserData(store.getState().employee.employee);
+        localForage.setItem('user', store.getState().employee.employee);
+      }
     });
   }
 
   loadUserData(value) {
     var self = this;
-    console.log(value);
     dbConfig.getData(value.obj.email).then(function(doc) {
      self.setState({
        user: doc,
@@ -239,7 +235,14 @@ export default class InvestmentForm extends React.Component {
         self.state.user['_attachments'] = attachmentObj;
       }
       dbConfig.putData(self.state.user).then(function(result) {
-        self.closeModal();
+        self.setState({
+          msg: 'show'
+        });
+        setTimeout(function(){  self.closeModal();
+          self.setState({
+            msg: 'hidden'
+          });
+         }, 2000);
         self.componentDidMount();
       });
     });
@@ -250,17 +253,17 @@ export default class InvestmentForm extends React.Component {
     dbConfig.getData(self.state.user.obj.email).then(function(doc) {
       dbConfig.deleteAttachment(doc._id, fileName, doc._rev).then(function (result) {
         dbConfig.getData(self.state.user.obj.email).then(function (doc) {
-            localForage.setItem('user', doc).then(function(value) {
-              store.dispatch(employeeDetail(value));
-              self.setState({
-                user : value
-              });
-              self.componentDidMount();
+          localForage.setItem('user', doc).then(function(value) {
+            store.dispatch(employeeDetail(value));
+            self.setState({
+              user : value
             });
+            self.componentDidMount();
           });
-        }).catch(function (error) {
-            console.log(error);
         });
+      }).catch(function (error) {
+          console.log(error);
+      });
     });
   }
 
@@ -272,166 +275,165 @@ export default class InvestmentForm extends React.Component {
             <meta name="description" content="Investment form" />
         </Helmet>
 
-          <div className="container parent-container">
-            <div className="row border-bottom">
-              <h3 className="text-center">NEWPUT INFOTECH PVT LTD</h3>
-              <h4 className="text-center">314 DM TOWER, 21/1 RACE COURSE ROAD, INDORE</h4>
-              <h5 className="text-center">Investment Details For 2017-18</h5>
+        <div className="container parent-container">
+          <div className="row border-bottom">
+            <h3 className="text-center">NEWPUT INFOTECH PVT LTD</h3>
+            <h4 className="text-center">314 DM TOWER, 21/1 RACE COURSE ROAD, INDORE</h4>
+            <h5 className="text-center">Investment Details For 2017-18</h5>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>Name Of Employee</span></div>
+            <div className="col-md-9 text-center">{store.getState().employee ? store.getState().employee.employee.obj.user_name : 'Dummy'}</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3"></div>
+            <div className="col-md-9 text-center">Actual Investment made</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right">
+              <span>Type Of Excemption</span>
             </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>Name Of Employee</span></div>
-              <div className="col-md-9 text-center">{store.getState().employee ? store.getState().employee.employee.obj.user_name : 'Dummy'}</div>
+            <div className="col-md-2 border-right">
+              <span>Maximum Excemption</span>
             </div>
-            <div className="row border-bottom">
-              <div className="col-md-3"></div>
-              <div className="col-md-9 text-center">Actual Investment made</div>
+            <div className="col-md-2 border-right">
+              <span>Declared Investment</span>
+              <span onClick={this.declearedModal}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+              <DeclearedModal open={this.state.declearedModal} modalClose={this.closeModal} update={this.declearData} declareObj={this.state.declearedInfo}/>
             </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right">
-                <span>Type Of Excemption</span>
-              </div>
-              <div className="col-md-2 border-right">
-                <span>Maximum Excemption</span>
-              </div>
-              <div className="col-md-2 border-right">
-                <span>Declared Investment</span>
-                <span onClick={this.declearedModal}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
-                <DeclearedModal open={this.state.declearedModal} modalClose={this.closeModal} update={this.declearData} declareObj={this.state.declearedInfo}/>
-              </div>
-              <div className="col-md-1 border-right">
-                <span onClick={()=> this.quaterlyModalOpen('q1')}>Apr-June <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
-                <QuaterlyModal open={this.state.qOne} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q1'} qObj={this.state.q1} files={this.state.q1Attachments ? this.state.q1Attachments : null} deleteFile={this.deleteAttachment}/>
-              </div>
-              <div className="col-md-1 border-right">
-                 <span>Jul-Sept</span>
-                 <span onClick={()=> this.quaterlyModalOpen('q2')}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
-                 <QuaterlyModal open={this.state.qTwo} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q2'} qObj={this.state.q2} files={this.state.q2Attachments ? this.state.q2Attachments : null} deleteFile={this.deleteAttachment}/>
-              </div>
-              <div className="col-md-1 border-right">
-                <span>Oct-Dec</span>
-                <span onClick={()=> this.quaterlyModalOpen('q3')}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
-                <QuaterlyModal open={this.state.qThree} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q3'} qObj={this.state.q3} files={this.state.q3Attachments ? this.state.q3Attachments : null} deleteFile={this.deleteAttachment}/>
-              </div>
-              <div className="col-md-1 border-right">
-                <span onClick={()=> this.quaterlyModalOpen('q4')}> Jan-Mar<i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
-                <QuaterlyModal open={this.state.qFour} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q4'} qObj={this.state.q4} files={this.state.q4Attachments ? this.state.q4Attachments : null} deleteFile={this.deleteAttachment}/>
-              </div>
-              <div className="col-md-1">
-                <span>Total</span>
-              </div>
+            <div className="col-md-1 border-right">
+              <span onClick={()=> this.quaterlyModalOpen('q1')}>Apr-June <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+              <QuaterlyModal open={this.state.qOne} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q1'} qObj={this.state.q1} files={this.state.q1Attachments ? this.state.q1Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
             </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><b>Home Loan interest</b></div>
-              <div className="col-md-2 border-right"><span>200000</span></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.hm_ln_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.hm_ln : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.hm_ln : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.hm_ln : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.hm_ln : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.hm_ln : null }</div>
+            <div className="col-md-1 border-right">
+               <span>Jul-Sept</span>
+               <span onClick={()=> this.quaterlyModalOpen('q2')}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+               <QuaterlyModal open={this.state.qTwo} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q2'} qObj={this.state.q2} files={this.state.q2Attachments ? this.state.q2Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
             </div>
-            <div className="row border-bottom">
-                <div className="col-md-3 border-right"><b>Medical bills</b></div>
-                <div className="col-md-2 border-right"><span>15000</span></div>
-                <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.med_dc: null } </span></div>
-                <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.med : null }</span></div>
-                <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.med : null }</span></div>
-                <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.med : null }</span></div>
-                <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.med : null }</span></div>
-                <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.med : null }</div>
+            <div className="col-md-1 border-right">
+              <span>Oct-Dec</span>
+              <span onClick={()=> this.quaterlyModalOpen('q3')}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+              <QuaterlyModal open={this.state.qThree} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q3'} qObj={this.state.q3} files={this.state.q3Attachments ? this.state.q3Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
             </div>
-            <div className="row border-bottom">
-                <div className="col-md-3 border-right"><b>Excemption 80 C</b></div>
-                <div className="col-md-2 border-right"><span>150000</span></div>
-                <div className="col-md-2 border-right"></div>
-                <div className="col-md-1 border-right"></div>
-                <div className="col-md-1 border-right"></div>
-                <div className="col-md-1 border-right"></div>
-                <div className="col-md-1 border-right"></div>
-                <div className="col-md-1"></div>
+            <div className="col-md-1 border-right">
+              <span onClick={()=> this.quaterlyModalOpen('q4')}> Jan-Mar <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+              <QuaterlyModal open={this.state.qFour} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q4'} qObj={this.state.q4} files={this.state.q4Attachments ? this.state.q4Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
             </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>LIC</span></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.lic_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.lic : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.lic : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.lic : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.lic : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.lic : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>Bank Deposits</span></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.bank_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.bank : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.bank : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.bank : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.bank : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.bank : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>Public Provident Fund</span></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.ppf_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.ppf : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.ppf : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.ppf : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.ppf : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.ppf : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>Mutual Funds</span></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.mutual_fund_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.mutual_fund : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.mutual_fund : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.mutual_fund : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.mutual_fund : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.mutual_fund : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>Home Loan Principal</span></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.hm_ln_pr_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.hm_ln_pr : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.hm_ln_pr : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.hm_ln_pr : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.hm_ln_pr : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.hm_ln_pr : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><span>Tution Fee For children</span></div>
-              <div className="col-md-2 border-right"></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.tf_child_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.tf_child : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.tf_child : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.tf_child : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.tf_child : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.tf_child : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><b>Hospitalization insurance Mediclaim 80 D</b></div>
-              <div className="col-md-2 border-right"><span>25000</span></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.hos_in_meddc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.hos_in_med : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.hos_in_med : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.hos_in_med : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.hos_in_med : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.hos_in_med : null }</div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col-md-3 border-right"><b>Education Loan Interest 80 E</b></div>
-              <div className="col-md-2 border-right"><span>No Limit</span></div>
-              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.edu_ln_dc:null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.edu_ln : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.edu_ln : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.edu_ln : null }</span></div>
-              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.edu_ln : null }</span></div>
-              <div className="col-md-1">{this.state.totalBlockData ? this.state.totalBlockData.edu_ln : null }</div>
+            <div className="col-md-1">
+              <span>Total</span>
             </div>
           </div>
-
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><b>Home Loan interest</b></div>
+            <div className="col-md-2 border-right"><span>200000</span></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.hm_ln_dc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.hm_ln : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.hm_ln : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.hm_ln : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.hm_ln : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.hm_ln_dc < this.state.totalBlockData.hm_ln ? 'Exceed Limit ': this.state.totalBlockData.hm_ln : null }</div>
+          </div>
+          <div className="row border-bottom">
+              <div className="col-md-3 border-right"><b>Medical bills</b></div>
+              <div className="col-md-2 border-right"><span>15000</span></div>
+              <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.med_dc: null } </span></div>
+              <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.med : null }</span></div>
+              <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.med : null }</span></div>
+              <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.med : null }</span></div>
+              <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.med : null }</span></div>
+              <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.med_dc < this.state.totalBlockData.med ? 'Exceed Limit ': this.state.totalBlockData.med : null }</div>
+          </div>
+          <div className="row border-bottom">
+              <div className="col-md-3 border-right"><b>Excemption 80 C</b></div>
+              <div className="col-md-2 border-right"><span>150000</span></div>
+              <div className="col-md-2 border-right"></div>
+              <div className="col-md-1 border-right"></div>
+              <div className="col-md-1 border-right"></div>
+              <div className="col-md-1 border-right"></div>
+              <div className="col-md-1 border-right"></div>
+              <div className="col-md-1"></div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>LIC</span></div>
+            <div className="col-md-2 border-right"></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.lic_dc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.lic : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.lic : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.lic : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.lic : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.lic_dc < this.state.totalBlockData.lic ? 'Exceed Limit ': this.state.totalBlockData.lic : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>Bank Deposits</span></div>
+            <div className="col-md-2 border-right"></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.bank_dc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.bank : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.bank : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.bank : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.bank : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.bank_dc < this.state.totalBlockData.bank ? 'Exceed Limit ': this.state.totalBlockData.bank : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>Public Provident Fund</span></div>
+            <div className="col-md-2 border-right"></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.ppf_dc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.ppf : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.ppf : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.ppf : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.ppf : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.ppf_dc < this.state.totalBlockData.ppf ? 'Exceed Limit ': this.state.totalBlockData.ppf : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>Mutual Funds</span></div>
+            <div className="col-md-2 border-right"></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.mutual_fund_dc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.mutual_fund : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.mutual_fund : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.mutual_fund : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.mutual_fund : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.mutual_fund_dc < this.state.totalBlockData.mutual_fund ? 'Exceed Limit ': this.state.totalBlockData.mutual_fund : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>Home Loan Principal</span></div>
+            <div className="col-md-2 border-right"></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.hm_ln_pr_dc : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.hm_ln_pr : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.hm_ln_pr : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.hm_ln_pr : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.hm_ln_pr : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.hm_ln_pr_dc < this.state.totalBlockData.hm_ln_pr ? 'Exceed Limit ': this.state.totalBlockData.hm_ln_pr : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><span>Tution Fee For children</span></div>
+            <div className="col-md-2 border-right"></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.tf_child_dc : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.tf_child : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.tf_child : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.tf_child : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.tf_child : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.tf_child_dc < this.state.totalBlockData.tf_child ? 'Exceed Limit ': this.state.totalBlockData.tf_child : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><b>Hospitalization insurance Mediclaim 80 D</b></div>
+            <div className="col-md-2 border-right"><span>25000</span></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.hos_in_meddc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.hos_in_med : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.hos_in_med : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.hos_in_med : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.hos_in_med : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.hos_in_meddc < this.state.totalBlockData.hos_in_med ? 'Exceed Limit ': this.state.totalBlockData.hos_in_med : null }</div>
+          </div>
+          <div className="row border-bottom">
+            <div className="col-md-3 border-right"><b>Education Loan Interest 80 E</b></div>
+            <div className="col-md-2 border-right"><span>No Limit</span></div>
+            <div className="col-md-2 border-right"><span>{this.state.declearedInfo? this.state.declearedInfo.edu_ln_dc:null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q1 ? this.state.q1.edu_ln : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q2 ? this.state.q2.edu_ln : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q3 ? this.state.q3.edu_ln : null }</span></div>
+            <div className="col-md-1 border-right"><span>{this.state.q4 ? this.state.q4.edu_ln : null }</span></div>
+            <div className="col-md-1">{this.state.totalBlockData ? this.state.declearedInfo.edu_ln_dc < this.state.totalBlockData.edu_ln ? 'Exceed Limit ': this.state.totalBlockData.edu_ln : null }</div>
+          </div>
+        </div>
       </div>
     );
   }

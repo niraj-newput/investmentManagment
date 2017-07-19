@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link, Redirect ,hashHistory} from 'react-router-dom';
-import Formsy from "formsy-react";
+import Formsy from 'formsy-react';
 import { Form, Input } from 'formsy-react-components';
+import {Helmet} from 'react-helmet';
+import localForage from 'localforage';
+
 import { employeeDetail } from '../actions/employee-action.js';
 import { dbConfig } from '../services/pouchdb-service.js';
-import "../assets/scss/login-form.scss";
-import {Helmet} from "react-helmet";
-import {store} from "../store.js";
-import localForage from "localforage";
+import {store} from '../store.js';
+import '../assets/scss/login-form.scss';
+
 
 class Login extends React.Component {
   constructor(props) {
@@ -19,7 +21,7 @@ class Login extends React.Component {
     var self = this;
     dbConfig.getData(user.email).then(function(doc) {
       if(doc.obj.email == user.email && doc.obj.password == user.password ) {
-        self.props.history.push("/investment-form");
+        self.props.history.push('/investment-form');
         store.dispatch(employeeDetail(doc));
       } else {
         alert("Email or password do not match");
