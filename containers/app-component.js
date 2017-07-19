@@ -5,9 +5,9 @@ import  RegisterUser  from "./register.js";
 import { Header } from "../components/header.js";
 import { Footer } from "../components/footer.js";
 import { connect } from 'react-redux';
-import { employeeDetail, removeUser } from '../actions/employee-action.js';
+import { dbConfig } from '../services/pouchdb-service.js';
+import { removeUser } from '../actions/employee-action.js';
 import {Helmet} from "react-helmet";
-import localForage from "localforage";
 
 class App extends React.Component {
   constructor(props) {
@@ -16,18 +16,31 @@ class App extends React.Component {
   }
 
   logout() {
-    localForage.clear();
-    this.props.dispatch(removeUser());
-    this.props.history.push('/login');
+    var self = this;
+    self.props.dispatch(removeUser());
+    dbConfig.findByLoggedInUser(true).then(function(doc) {
+        doc.docs[0].obj['loggedIn'] = false;
+        var doc = {
+            _id: doc.docs[0]._id,
+            _rev: doc.docs[0]._rev,
+            obj: doc.docs[0].obj
+        }
+        dbConfig.putData(doc).then(function(response) {
+          self.props.history.push('/login');
+        });
+    }).catch(function(err) {
+    });
   }
 
   componentWillMount() {
-    var self = this;
-    localForage.getItem('user').then(function(value){
-      if(value) {
-         self.props.dispatch(employeeDetail(value));
-      }
-    });
+      var self = this;
+      dbConfig.findByLoggedInUser(true).then(function(doc) {
+         if(doc.docs.length = 0) {
+             self.props.history.push('/login');
+         }
+      }).catch(function(err) {
+      });
+        
   }
   render() {
     return (
@@ -37,7 +50,7 @@ class App extends React.Component {
             <title>React App</title>
             <meta name="description" content="App header" />
         </Helmet>
-        <Header logout={this.logout} employee={this.props.employee}/>
+        <Header logout={this.logout}/>
         <div className="view-container">
             {this.props.children}
         </div>

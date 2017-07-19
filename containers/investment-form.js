@@ -6,8 +6,7 @@ import { DeclearedModal } from '../components/decleared-modal.js';
 import { employeeDetail } from '../actions/employee-action.js';
 import { QuaterlyModal } from '../components/quaterly-modal.js';
 import { dbConfig } from '../services/pouchdb-service.js';
-import localForage from 'localforage';
-import '../assets/scss/invest-form.scss';
+import "../assets/scss/invest-form.scss";
 
 export default class InvestmentForm extends React.Component {
 
@@ -40,16 +39,17 @@ export default class InvestmentForm extends React.Component {
   }
 
   componentDidMount() {
-    var self = this;
-    localForage.getItem('user').then(function(value) {
-      if(value) {
-        self.loadUserData(value);
-        store.dispatch(employeeDetail(value));
-      }else {
-        self.loadUserData(store.getState().employee.employee);
-        localForage.setItem('user', store.getState().employee.employee);
-      }
-    });
+      var self = this;
+      dbConfig.findByLoggedInUser(true).then(function(doc){
+          if(doc.docs.length > 0) {
+              store.dispatch(employeeDetail(doc.docs[0]));
+              self.loadUserData(doc.docs[0]);
+          } else {
+              self.props.history.push('/login');
+          }
+      }).catch(function(err) {
+          console.log(err);
+      });
   }
 
   loadUserData(value) {

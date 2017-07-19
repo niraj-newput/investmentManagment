@@ -7,8 +7,10 @@ import localForage from 'localforage';
 
 import { employeeDetail } from '../actions/employee-action.js';
 import { dbConfig } from '../services/pouchdb-service.js';
-import {store} from '../store.js';
-import '../assets/scss/login-form.scss';
+
+import "../assets/scss/login-form.scss";
+import {Helmet} from "react-helmet";
+import {store} from "../store.js";
 
 
 class Login extends React.Component {
@@ -21,8 +23,16 @@ class Login extends React.Component {
     var self = this;
     dbConfig.getData(user.email).then(function(doc) {
       if(doc.obj.email == user.email && doc.obj.password == user.password ) {
-        self.props.history.push('/investment-form');
-        store.dispatch(employeeDetail(doc));
+        doc.obj['loggedIn'] = true;
+        var doc = {
+            _id: doc._id,
+            _rev: doc._rev,
+            obj: doc.obj
+        }
+        dbConfig.putData(doc).then(function(response) {
+            store.dispatch(employeeDetail(doc));
+            parentInstance.props.history.push("/investment-form");
+        });
       } else {
         alert("Email or password do not match");
       }

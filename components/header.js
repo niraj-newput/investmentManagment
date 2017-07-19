@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import {store} from  '../store.js';
 export const Header = ((props) => {
   return (
     <nav className="navbar navbar-default" id="header">
@@ -16,12 +16,11 @@ export const Header = ((props) => {
           <span className="navbar-brand">Investment Management</span>
        </div>
        <div className="collapse navbar-collapse" id="app-navbar-collapse">
-         { props.employee ?
-             <ul className="nav navbar-nav navbar-right">
-               <li><a>{props.employee.employee.obj.user_name}</a></li>
-               <li><Link to="/login" onClick={() => props.logout()}><span className="glyphicon glyphicon-log-out"></span>LogOut</Link></li>
-             </ul> : null
-         }
+           {store.getState().employee?
+               <ul className="nav navbar-nav navbar-right">
+                 <li><a>{store.getState().employee.employee.obj.user_name}</a></li>
+                 <li><a onClick={() => props.logout()}><span className="glyphicon glyphicon-log-out"></span>LogOut</a></li>
+               </ul> : null}
        </div>
      </div>
    </nav>

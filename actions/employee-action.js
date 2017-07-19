@@ -9,6 +9,6 @@ export function employeeDetail(user) {
 export function removeUser() {
     return {
       type: USER_LOGOUT,
-      employee: {}
+      employee: null
     };
 }
