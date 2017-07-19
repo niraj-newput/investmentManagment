@@ -20,12 +20,8 @@ class App extends React.Component {
     self.props.dispatch(removeUser());
     dbConfig.findByLoggedInUser(true).then(function(doc) {
         doc.docs[0].obj['loggedIn'] = false;
-        var doc = {
-            _id: doc.docs[0]._id,
-            _rev: doc.docs[0]._rev,
-            obj: doc.docs[0].obj
-        }
-        dbConfig.putData(doc).then(function(response) {
+
+        dbConfig.putData(doc.docs[0]).then(function(response) {
           self.props.history.push('/login');
         });
     }).catch(function(err) {
@@ -40,7 +36,7 @@ class App extends React.Component {
          }
       }).catch(function(err) {
       });
-        
+
   }
   render() {
     return (

@@ -16,7 +16,6 @@
   "dependencies": {
     "formsy-react": "^0.19.5",
     "formsy-react-components": "^0.10.1",
-    "localforage": "^1.5.0",
     "path": "^0.12.7",
     "pouchdb": "^6.2.0",
     "pouchdb-find": "^6.2.0",

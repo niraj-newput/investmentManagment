@@ -1,19 +1,19 @@
 import PouchDB from 'pouchdb';
 import plugin from 'pouchdb-find';
 PouchDB.plugin(plugin);
-var db = new PouchDB('AppDB2',plugin);
+var db = new PouchDB('AppDB',plugin);
 
 db.createIndex({
   index: {
-    fields:['email']
+    fields:['obj.email']
   }
 },function(err, result) {
   if(err) {
     console.log(err);
   }else {
-    console.log(result);
   }
 });
+
 db.createIndex( {
   index: {
     fields: ['obj.loggedIn']
@@ -22,7 +22,6 @@ db.createIndex( {
   if(err) {
     console.log(err);
   }else {
-    console.log(result);
   }
 });
 
@@ -34,7 +33,7 @@ export const dbConfig = {
     return db.get(id);
   },
   findByEmail: function(email) {
-    return  db.find({selector: {'email': email}});
+    return  db.find({selector: {'obj.email': email}});
   },
   findByLoggedInUser: function(value) {
     return  db.find({selector: {'obj.loggedIn': {$eq: value}}});

@@ -8,25 +8,19 @@ function employee(state = null, action) {
         employee: action.employee
       };
 		break;
+    case USER_LOGOUT:
+      return {
+        employee: action.employee
+      };
+    break;
     default:
     return state;
   }
 }
-function removeEmployee(state = null, action) {
-    switch (action.type) {
-      case USER_LOGOUT:
-        return {
-          employee: action.employee
-        };
-  		break;
-      default:
-      return state;
-    }
-}
+
 
 const reducers = combineReducers({
-  employee,
-  removeEmployee
+  employee
 })
 
 export default reducers;

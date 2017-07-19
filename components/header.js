@@ -16,7 +16,7 @@ export const Header = ((props) => {
           <span className="navbar-brand">Investment Management</span>
        </div>
        <div className="collapse navbar-collapse" id="app-navbar-collapse">
-           {store.getState().employee?
+           {store.getState().employee && store.getState().employee.employee ?
                <ul className="nav navbar-nav navbar-right">
                  <li><a>{store.getState().employee.employee.obj.user_name}</a></li>
                  <li><a onClick={() => props.logout()}><span className="glyphicon glyphicon-log-out"></span>LogOut</a></li>

@@ -193,6 +193,8 @@ export default class InvestmentForm extends React.Component {
   declearData(model) {
     this.state.user['declareData'] = model;
     dbConfig.putData(this.state.user).then(function(result) {
+      dbConfig.getData(result.id).then(function (doc) {
+      });
     });
     this.closeModal();
     this.componentDidMount();
@@ -253,13 +255,11 @@ export default class InvestmentForm extends React.Component {
     dbConfig.getData(self.state.user.obj.email).then(function(doc) {
       dbConfig.deleteAttachment(doc._id, fileName, doc._rev).then(function (result) {
         dbConfig.getData(self.state.user.obj.email).then(function (doc) {
-          localForage.setItem('user', doc).then(function(value) {
-            store.dispatch(employeeDetail(value));
-            self.setState({
-              user : value
-            });
-            self.componentDidMount();
+          store.dispatch(employeeDetail(doc));
+          self.setState({
+            user : doc
           });
+          self.componentDidMount();
         });
       }).catch(function (error) {
           console.log(error);
@@ -283,7 +283,7 @@ export default class InvestmentForm extends React.Component {
           </div>
           <div className="row border-bottom">
             <div className="col-md-3 border-right"><span>Name Of Employee</span></div>
-            <div className="col-md-9 text-center">{store.getState().employee ? store.getState().employee.employee.obj.user_name : 'Dummy'}</div>
+            <div className="col-md-9 text-center">{store.getState().employee && store.getState().employee.employee ? store.getState().employee.employee.obj.user_name : 'Dummy'}</div>
           </div>
           <div className="row border-bottom">
             <div className="col-md-3"></div>
