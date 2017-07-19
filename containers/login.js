@@ -16,10 +16,10 @@ class Login extends React.Component {
   }
 
   submit(user) {
-    var parentInstance = this;
+    var self = this;
     dbConfig.getData(user.email).then(function(doc) {
       if(doc.obj.email == user.email && doc.obj.password == user.password ) {
-        parentInstance.props.history.push("/investment-form");
+        self.props.history.push("/investment-form");
         store.dispatch(employeeDetail(doc));
       } else {
         alert("Email or password do not match");

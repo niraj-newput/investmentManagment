@@ -20,10 +20,7 @@ export default class InvestmentForm extends React.Component {
     this.attachmentModal = this.attachmentModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.declearData = this.declearData.bind(this);
-    this.qOneModal = this.qOneModal.bind(this);
-    this.qTwoModal = this.qTwoModal.bind(this);
-    this.qThreeModal = this.qThreeModal.bind(this);
-    this.qFourModal = this.qFourModal.bind(this);
+    this.quaterlyModalOpen = this.quaterlyModalOpen.bind(this);
     this.quaterlyData = this.quaterlyData.bind(this);
     this.deleteAttachment = this.deleteAttachment.bind(this);
     this.loadUserData = this.loadUserData.bind(this);
@@ -46,22 +43,23 @@ export default class InvestmentForm extends React.Component {
   }
 
   componentDidMount() {
-      var _this = this;
+      var self = this;
       localForage.getItem('user').then(function(value) {
         if(value) {
-          _this.loadUserData(value);
+          self.loadUserData(value);
           store.dispatch(employeeDetail(value));
         }else {
-          _this.loadUserData(store.getState().employee.employee);
+          self.loadUserData(store.getState().employee.employee);
           localForage.setItem('user', store.getState().employee.employee);
         }
     });
   }
 
   loadUserData(value) {
-    var _this = this;
+    var self = this;
+    console.log(value);
     dbConfig.getData(value.obj.email).then(function(doc) {
-     _this.setState({
+     self.setState({
        user: doc,
        declearedInfo: doc.declareData ? doc.declareData : null,
        q1: doc.q1 ? doc.q1 : null,
@@ -71,20 +69,20 @@ export default class InvestmentForm extends React.Component {
      });
      var totalInfo = {};
      var keys;
-     if(_this.state.q1) {
-        keys = Object.keys(_this.state.q1);
+     if(self.state.q1) {
+        keys = Object.keys(self.state.q1);
         for (var i = 0; i < keys.length; i++) {
-          if(_this.state.q1 && !_this.state.q2 && ! _this.state.q3) {
-            totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]);
-          } else if(_this.state.q1 && _this.state.q2 && ! _this.state.q3) {
-              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]);
-          } else if(_this.state.q1 && _this.state.q2 && _this.state.q3) {
-              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]);
-          } else if(_this.state.q1 && _this.state.q2 && _this.state.q3 && _this.state.q4) {
-              totalInfo[keys[i]] = parseInt(_this.state.q1[keys[i]]) + parseInt(_this.state.q2[keys[i]]) + parseInt(_this.state.q3[keys[i]]) + parseInt(_this.state.q4[keys[i]]);
+          if(self.state.q1 && !self.state.q2 && ! self.state.q3) {
+            totalInfo[keys[i]] = parseInt(self.state.q1[keys[i]]);
+          } else if(self.state.q1 && self.state.q2 && ! self.state.q3) {
+              totalInfo[keys[i]] = parseInt(self.state.q1[keys[i]]) + parseInt(self.state.q2[keys[i]]);
+          } else if(self.state.q1 && self.state.q2 && self.state.q3) {
+              totalInfo[keys[i]] = parseInt(self.state.q1[keys[i]]) + parseInt(self.state.q2[keys[i]]) + parseInt(self.state.q3[keys[i]]);
+          } else if(self.state.q1 && self.state.q2 && self.state.q3 && self.state.q4) {
+              totalInfo[keys[i]] = parseInt(self.state.q1[keys[i]]) + parseInt(self.state.q2[keys[i]]) + parseInt(self.state.q3[keys[i]]) + parseInt(self.state.q4[keys[i]]);
           }
         }
-        _this.setState({totalBlockData: totalInfo});
+        self.setState({totalBlockData: totalInfo});
      }
      if(doc._attachments) {
        var promises = [];
@@ -92,7 +90,7 @@ export default class InvestmentForm extends React.Component {
        var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
        for(var i = 0; i < attachments.length; i++) {
          var file = attachments[i];
-         promises.push(_this.fileRead(doc._id, file, doc._rev));
+         promises.push(self.fileRead(doc._id, file, doc._rev));
     }
       Promise.all(promises).then(function(value) {
         for(var i = 0; i < value.length; i++) {
@@ -108,12 +106,19 @@ export default class InvestmentForm extends React.Component {
                q4Attachments.push({name: file.name, url: file.url, type: file.type });
            }
         }
-         _this.setState({
+         self.setState({
            q1Attachments: q1Attachments,
            q2Attachments: q2Attachments,
            q3Attachments: q3Attachments,
            q4Attachments: q4Attachments
          });
+      });
+    }else {
+      self.setState({
+        q1Attachments: null,
+        q2Attachments: null,
+        q3Attachments: null,
+        q4Attachments:null
       });
     }
    });
@@ -163,28 +168,30 @@ export default class InvestmentForm extends React.Component {
         break;
     }
   }
-  qOneModal() {
-    this.setState({
-      qOne: true
-    });
-  }
 
-  qTwoModal() {
-    this.setState({
-      qTwo: true
-    });
-  }
-
-  qThreeModal() {
-    this.setState({
-      qThree: true
-    });
-  }
-
-  qFourModal() {
-    this.setState({
-      qFour: true
-    });
+  quaterlyModalOpen(quaterno) {
+    switch(quaterno) {
+      case 'q1':
+        this.setState({
+          qOne: true
+        });
+        break;
+      case 'q2':
+        this.setState({
+          qTwo: true
+        });
+        break;
+      case 'q3':
+        this.setState({
+          qThree: true
+        });
+        break;
+      case 'q4':
+        this.setState({
+          qFour: true
+        });
+        break;
+    }
   }
 
   declearData(model) {
@@ -212,40 +219,48 @@ export default class InvestmentForm extends React.Component {
   }
 
   quaterlyData(model, quaterno) {
-    var _this = this;
+    var self = this;
     var promises = [];
     for(var i = 0; i < model.file.length; i++) {
       var a = this.fileLoad(model.file[i]);
       promises.push(a);
     }
-    _this.state.user[quaterno] = model;
+    self.state.user[quaterno] = model;
     Promise.all(promises).then(function(value) {
       var attachmentObj = {};
-      if(  _this.state.user._attachments) {
+      if(  self.state.user._attachments) {
         for(var i = 0; i < value.length; i++) {
-          _this.state.user._attachments[quaterno + '.' + value[i]['name']] = value[i];
+          self.state.user._attachments[quaterno + '.' + value[i]['name']] = value[i];
         }
-
       }else {
         for(var i = 0; i < value.length; i++) {
           attachmentObj[quaterno + '.' +value[i]['name']] = value[i];
         }
-        _this.state.user['_attachments'] = attachmentObj;
+        self.state.user['_attachments'] = attachmentObj;
       }
-      dbConfig.putData(_this.state.user).then(function(result) {
-        _this.closeModal();
-        _this.componentDidMount();
+      dbConfig.putData(self.state.user).then(function(result) {
+        self.closeModal();
+        self.componentDidMount();
       });
     });
   }
 
-  deleteAttachment(name) {
-    var _this = this;
-    dbConfig.getData(this.state.user.obj.email).then(function(doc) {
-      dbConfig.deleteAttachment(doc._id, name, doc._rev).then(function (result) {
-        _this.closeModal();
-        _this.componentDidMount();
-      });
+  deleteAttachment(fileName) {
+    var self = this;
+    dbConfig.getData(self.state.user.obj.email).then(function(doc) {
+      dbConfig.deleteAttachment(doc._id, fileName, doc._rev).then(function (result) {
+        dbConfig.getData(self.state.user.obj.email).then(function (doc) {
+            localForage.setItem('user', doc).then(function(value) {
+              store.dispatch(employeeDetail(value));
+              self.setState({
+                user : value
+              });
+              self.componentDidMount();
+            });
+          });
+        }).catch(function (error) {
+            console.log(error);
+        });
     });
   }
 
@@ -284,21 +299,21 @@ export default class InvestmentForm extends React.Component {
                 <DeclearedModal open={this.state.declearedModal} modalClose={this.closeModal} update={this.declearData} declareObj={this.state.declearedInfo}/>
               </div>
               <div className="col-md-1 border-right">
-                <span onClick={this.qOneModal}>Apr-June <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+                <span onClick={()=> this.quaterlyModalOpen('q1')}>Apr-June <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
                 <QuaterlyModal open={this.state.qOne} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q1'} qObj={this.state.q1} files={this.state.q1Attachments ? this.state.q1Attachments : null} deleteFile={this.deleteAttachment}/>
               </div>
               <div className="col-md-1 border-right">
                  <span>Jul-Sept</span>
-                 <span onClick={this.qTwoModal}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+                 <span onClick={()=> this.quaterlyModalOpen('q2')}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
                  <QuaterlyModal open={this.state.qTwo} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q2'} qObj={this.state.q2} files={this.state.q2Attachments ? this.state.q2Attachments : null} deleteFile={this.deleteAttachment}/>
               </div>
               <div className="col-md-1 border-right">
                 <span>Oct-Dec</span>
-                <span onClick={this.qThreeModal}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+                <span onClick={()=> this.quaterlyModalOpen('q3')}> <i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
                 <QuaterlyModal open={this.state.qThree} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q3'} qObj={this.state.q3} files={this.state.q3Attachments ? this.state.q3Attachments : null} deleteFile={this.deleteAttachment}/>
               </div>
               <div className="col-md-1 border-right">
-                <span onClick={this.qFourModal}> Jan-Mar<i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+                <span onClick={()=> this.quaterlyModalOpen('q4')}> Jan-Mar<i className="fa fa-pencil-square-o" aria-hidden="true"></i></span>
                 <QuaterlyModal open={this.state.qFour} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q4'} qObj={this.state.q4} files={this.state.q4Attachments ? this.state.q4Attachments : null} deleteFile={this.deleteAttachment}/>
               </div>
               <div className="col-md-1">

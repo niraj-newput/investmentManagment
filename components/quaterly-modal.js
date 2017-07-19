@@ -9,19 +9,19 @@ export class QuaterlyModal extends React.Component {
   }
 
   showAttachments() {
-    var _this = this;
+    var self = this;
     var attachments  ;
     if(this.props.files) {
       attachments = this.props.files.map(function(file) {
        return (<div key={Math.random()} className="row">
          <div className="col-sm-8">
-           <span>{file.name.replace(_this.props.quaterNo+ ".", "")}</span>
+           <span>{file.name.replace(self.props.quaterNo+ ".", "")}</span>
          </div>
          <div className="col-sm-2">
-          <a href={file.url} target="_blank">View</a>
+            <a href={file.url} target="_blank">View</a>
          </div>
          <div className="col-sm-2">
-           <i className="fa fa-trash-o fa-2x" onClick={(event) => _this.props.deleteFile(file.name)} aria-hidden="true" value="niraj"></i>
+           <i className="fa fa-trash-o" onClick={(event) => self.props.deleteFile(file.name)} aria-hidden="true"></i>
          </div>
        </div>);
      });
@@ -43,7 +43,7 @@ export class QuaterlyModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); }}  ref="dec_modal" noValidate >
+          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.refs.q_modal.refs.formsy.reset(); }}  ref="q_modal" noValidate >
             <Input name="hm_ln" label="Home Loan interest" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" value={this.props.qObj ? this.props.qObj["hm_ln"] : ''} required/>
             <Input name="med" label="Medicals Bills" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" value={this.props.qObj ? this.props.qObj["med"] : ''} required/>
             <div>
