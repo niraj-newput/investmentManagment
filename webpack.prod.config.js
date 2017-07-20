@@ -10,10 +10,10 @@ module.exports = {
   ],
   output: {
     filename: 'bundle.js',
+    publicPath: '/'
   },
   plugins: [
-    new webpack.optimize.DedupePlugin(),
-    new ExtractTextPlugin('./assets/css/app.css'),
+    new ExtractTextPlugin('assets/css/app.css'),
     new webpack.optimize.UglifyJsPlugin({
       minimize: true,
       compress: {
