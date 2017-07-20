@@ -1,5 +1,6 @@
 import React from 'react';
 import {Modal, ModalHeader, ModalBody, ModalTitle, ModalFooter, ModalClose} from 'react-modal-bootstrap';
+
 import {Form, Input, File, Select} from 'formsy-react-components';
 
 export class QuaterlyModal extends React.Component {
@@ -37,13 +38,13 @@ export class QuaterlyModal extends React.Component {
         isOpen = { this.props.open }
         contentLabel = "Modal" >
         <ModalHeader>
-          <ModalClose onClick={() => {this.props.modalClose();  this.refs.q_modal.refs.formsy.reset();}}/>
+          <ModalClose onClick={this.props.modalClose}/>
           <ModalTitle>
-          <span>Quaterly Form</span>
+          <span>{this.props.quaterName} Investment Form</span>
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.refs.q_modal.refs.formsy.reset(); }}  ref="q_modal" noValidate >
+          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); }}  ref="q_modal" noValidate >
             <Input name="hm_ln" label="Home Loan interest" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,maxLength:6" validationErrors={{required:"Field is required, Please Enter 0 amount.",isNumeric:"Enter only number", maxLength:"It should not exceed 200000"}} value={this.props.qObj ? this.props.qObj["hm_ln"] : ''} required/>
             <Input name="med" label="Medicals Bills" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,maxLength:5" validationErrors={{isNumeric:"Enter only number", maxLength:"It should not exceed 15000"}} value={this.props.qObj ? this.props.qObj["med"] : ''} required/>
             <div>
@@ -57,7 +58,7 @@ export class QuaterlyModal extends React.Component {
             <Input name="tf_child" label="Tution Fee For children" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,maxLength:6" validationErrors={{isNumeric:"Enter only number", maxLength:"It should not exceed 200000"}} value={this.props.qObj ? this.props.qObj["tf_child"] : ''} required/>
             <Input name="hos_in_med" label="Hospitalization insurance Mediclaim 80 D" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,maxLength:5" validationErrors={{isNumeric:"Enter only number", maxLength:"It should not exceed 25000"}} value={this.props.qObj ? this.props.qObj["hos_in_med"] : ''} required/>
             <Input name="edu_ln" label="Education Loan Interest 80 E" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,maxLength:6" validationErrors={{isNumeric:"Enter only number", maxLength:"It should not exceed 200000"}} value={this.props.qObj ? this.props.qObj["edu_ln"] : ''} required/>
-            <File className="form-control" name="file" label="Add Files" id="file" accept="application/pdf,image/*" multiple labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" required/>
+            <File className="form-control" name="file" label="Add Files" id="file" accept="application/pdf,image/*" multiple labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" />
             {this.showAttachments()}
             <div className="row btn-group model-footer">
                 <div className="col-md-6"><button type="submit" className="btn btn-primary app-btn">Save Details</button></div>

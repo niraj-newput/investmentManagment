@@ -1,6 +1,6 @@
 // routes.js
 import React from 'react';
-import { Route} from 'react-router-dom';
+import { Route, Redirect, Switch} from 'react-router-dom';
 import  App from './containers/app-component.js';
 import { Provider } from 'react-redux';
 import {store} from "./store.js";
@@ -10,11 +10,14 @@ import InvestmentForm from './containers/investment-form.js';
 
 const routes = (
   <Provider store ={store}>
-      <App>
-        <Route path="/login" component={ Login }/>
-        <Route path="/register" component={ RegisterUser }/>
-        <Route path="/investment-form" component={ InvestmentForm }/>
-      </App>
+    <App>
+      <Switch>
+        <Redirect exact to="/login" from="/"/>
+        <Route exact path="/login" component={ Login }/>
+        <Route exact path="/register" component={ RegisterUser }/>
+        <Route exact path="/investment-form" component={ InvestmentForm }/>
+      </Switch>
+    </App>
   </Provider>
 );
 export default routes;
