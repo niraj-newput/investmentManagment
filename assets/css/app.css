@@ -1,0 +1,49 @@
+.login-form {
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  margin: 100px auto;
+  padding: 50px 30px;
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.2);
+  width: 50%; }
+.parent-container {
+  margin: 50px auto 30px;
+  border: 1px solid #000; }
+  .parent-container div {
+    min-height: 45px;
+    text-align: center; }
+  .parent-container .cell {
+    min-height: 45px;
+    padding: 12px 0px;
+    text-align: center; }
+  .parent-container .border-bottom {
+    border-bottom: 1px solid lightgrey; }
+  .parent-container .border-right {
+    border-right: 1px solid lightgrey; }
+#header {
+  background-color: #F5F5F5;
+  color: #777; }
+  #header a {
+    padding: 10px 15px; }
+  #header .brand-img {
+    height: 30px;
+    width: 50px; }
+
+.view-container {
+  min-height: 550px; }
+  .view-container .app-btn {
+    width: 150px; }
+  .view-container .form-input-row {
+    margin: 0 30px; }
+  .view-container .register-container {
+    width: 50%;
+    margin: 0 auto; }
+  .view-container .model-footer {
+    margin: 20px 0px; }
+
+.footer {
+  text-align: center;
+  background-color: #F5F5F5;
+  font-size: 15px;
+  padding: 10px; }
+
+/*# sourceMappingURL=app.css.map*/

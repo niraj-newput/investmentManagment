@@ -3,7 +3,6 @@ import Formsy from 'formsy-react';
 import { Link, Redirect ,hashHistory} from 'react-router-dom';
 import { Form, Input } from 'formsy-react-components';
 import {Helmet} from 'react-helmet';
-import localForage from 'localforage';
 
 import { employeeDetail } from '../actions/employee-action.js';
 import { dbConfig } from '../services/pouchdb-service.js';

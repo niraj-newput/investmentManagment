@@ -1,34 +1,36 @@
 @import "variables";
 #header {
-    background-color: $blue-color;
-    a {
-        padding: 10px 15px;
-    }
-    .brand-img {
-        height: 30px;
-        width: 50px;
-    }
+  background-color: $header-color;
+  color: #777;
+  a {
+    padding: 10px 15px;
+  }
+  .brand-img {
+    height: 30px;
+    width: 50px;
+  }
 }
 .view-container {
-    min-height: 550px;
-    
-    .app-btn {
-        width: 150px;
-    }
-    .form-input-row {
-        margin: 0 30px;
-    }
-    .register-container {
-        width: 50%;
-        margin: 0 auto;
-    }
-    .model-footer {
-        margin: 20px 0px;
-    }
+  min-height: 550px;
+
+  .app-btn {
+    width: 150px;
+  }
+  .form-input-row {
+    margin: 0 30px;
+  }
+  .register-container {
+    width: 50%;
+    margin: 0 auto;
+  }
+  .model-footer {
+    margin: 20px 0px;
+  }
 }
+
 .footer {
-    text-align: center;
-    background-color: $blue-color;
-    font-size: 15px;
-    padding: 10px;
+  text-align: center;
+  background-color: $header-color;
+  font-size: 15px;
+  padding: 10px;
 }
