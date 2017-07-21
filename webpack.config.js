@@ -6,7 +6,7 @@ module.exports = {
   devtool: 'eval',
   entry: './index.js',
   output: {
-    publicPath: '/',
+    path: '/public/assets/js',
     filename: 'bundle.js'
   },
   module: {
@@ -22,7 +22,7 @@ module.exports = {
     ]
   },
   plugins: [
-      new ExtractTextPlugin('./assets/css/app.css'),
+      new ExtractTextPlugin('./public/assets/css/app.css'),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoEmitOnErrorsPlugin()
     ],

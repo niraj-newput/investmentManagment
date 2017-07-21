@@ -7,7 +7,7 @@ import {Helmet} from 'react-helmet';
 import { employeeDetail } from '../actions/employee-action.js';
 import { dbConfig } from '../services/pouchdb-service.js';
 import {store} from '../store.js';
-import '../assets/scss/login-form.scss';
+import '../public/assets/scss/login-form.scss';
 
 
 class Login extends React.Component {

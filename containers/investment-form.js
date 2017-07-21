@@ -6,7 +6,7 @@ import { DeclearedModal } from '../components/decleared-modal.js';
 import { employeeDetail } from '../actions/employee-action.js';
 import { QuaterlyModal } from '../components/quaterly-modal.js';
 import { dbConfig } from '../services/pouchdb-service.js';
-import "../assets/scss/invest-form.scss";
+import "../public/assets/scss/invest-form.scss";
 
 export default class InvestmentForm extends React.Component {
 
