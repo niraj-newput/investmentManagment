@@ -9,8 +9,7 @@ module.exports = {
     './index.js'
   ],
   output: {
-    filename: 'bundle.js',
-    publicPath: '/'
+    filename: 'bundle.js'
   },
   plugins: [
     new ExtractTextPlugin('assets/css/app.css'),
