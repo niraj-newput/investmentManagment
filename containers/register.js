@@ -44,10 +44,10 @@ export default class RegisterUser extends React.Component {
             <Input name="password" type="password" label="Password" validations="minLength:8" validationErrors={{minLength:'Password must have 8 characters'}} placeholder="Password" required/>
           </div>
           <div className="form-group">
-            <Input name="c_password" type="password" label="Confirm Password" validations="equalsField:password" validationError="Password does not match"  placeholder="Confirm Password"/>
+            <Input name="c_password" type="password" label="Confirm Password" validations="equalsField:password" validationError="Password does not match"  placeholder="Confirm Password" required/>
           </div>
           <div className="form-group">
-            <Input name="user_name" label="User Name" validations="isAlpha" validationErrors={{isAlpha:'Enter only Characters'}} type="text" className="form-control" id="user_name" placeholder="User name" required/>
+            <Input name="user_name" label="Full Name" validations="isWords" validationErrors={{isAlpha:'Enter only Characters'}} type="text" className="form-control" id="user_name" placeholder="User name" required/>
           </div>
           <div className="form-group">
             <button type="submit" className="btn btn-primary pull-right">Registration</button>

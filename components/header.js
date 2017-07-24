@@ -12,7 +12,7 @@ export const Header = ((props) => {
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
           </button>
-          <a className="navbar-brand"><img className="brand-img" src="../assets/images/company_logo.png" alt="brand"/></a>
+          <a className="navbar-brand"><img className="brand-img" src="../public/assets/images/company_logo.png" alt="brand"/></a>
           <span className="navbar-brand">Investment Management</span>
        </div>
        <div className="collapse navbar-collapse" id="app-navbar-collapse">
