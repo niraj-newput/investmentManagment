@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Formsy from 'formsy-react';
 import Confirm from "react-confirm-bootstrap";
 import {Modal, ModalHeader, ModalBody, ModalTitle, ModalFooter, ModalClose} from 'react-modal-bootstrap';
@@ -16,25 +17,26 @@ export class QuaterlyModal extends React.Component {
     super(props);
     this.showAttachments = this.showAttachments.bind(this);
     this.onChange = this.onChange.bind(this);
-
+    this.onClose = this.onClose.bind(this);
     this.state = {
       btnState: true
     };
   }
 
   onChange() {
-    console.log('on change');
     this.setState({
       btnState: false
     });
   }
 
   onConfirm(fileName) {
-    var self = this;
-    console.log(this);
-    console.log('con');
-    console.log(fileName);
-    self.props.deleteFile(fileName);
+    this.props.deleteFile(fileName);
+  }
+
+  onClose(e) {
+    e.preventDefault();
+    this.setState({btnState: true});
+    this.props.modalClose();
   }
 
   showAttachments() {
@@ -51,13 +53,12 @@ export class QuaterlyModal extends React.Component {
            </div>
            <div className="col-sm-2">
            <Confirm
-                 onConfirm={() => { self.onConfirm(file.name); }}
-                 body="Are you sure you want to delete this file?"
-                 confirmText="Confirm Delete"
-                 title="Deleting Stuff">
-                 <i className="fa fa-trash-o" aria-hidden="true"></i>
-             </Confirm>
-
+             onConfirm={() => { self.onConfirm(file.name); }}
+             body="Are you sure you want to delete this file?"
+             confirmText="Confirm Delete"
+             title="Deleting Stuff">
+             <i className="fa fa-trash-o" aria-hidden="true"></i>
+           </Confirm>
            </div>
          </div>);
        });
@@ -70,7 +71,8 @@ export class QuaterlyModal extends React.Component {
       <Modal
         size = "modal-md"
         isOpen = { this.props.open }
-        contentLabel = "Modal" >
+        contentLabel = "Modal"
+        ref="modal">
         <ModalHeader>
           <ModalClose onClick={this.props.modalClose}/>
           <ModalTitle>
@@ -78,7 +80,7 @@ export class QuaterlyModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.setState({btnState: true});}}  ref="q_modal" noValidate >
+          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.setState({btnState: true});}} noValidate >
             <Input name="hm_ln" label="Home Loan interest" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,isSetPrecision" validationErrors={{isNumeric:"Enter only number", isSetPrecision: 'Enter only 2 digit after decimal'}} value={ (this.props.qObj && this.props.qObj["hm_ln"] != '0') ? this.props.qObj["hm_ln"] : '' } />
             <Input name="med" label="Medicals Bills" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric" validationErrors={{isNumeric:"Enter only number"}} value={(this.props.qObj && this.props.qObj["med"] != '0') ? this.props.qObj["med"] : ''} />
             <div>
@@ -96,7 +98,7 @@ export class QuaterlyModal extends React.Component {
             {this.showAttachments()}
             <div className="row btn-group model-footer">
               <div className="col-md-6"><button type="submit" className="btn btn-primary app-btn" disabled={this.state.btnState} >Save Details</button></div>
-              <div className="col-md-6"><button onClick={(e) => {e.preventDefault(); this.props.modalClose(); this.setState({btnState: true}); }} className="btn btn-warning app-btn">Close</button></div>
+              <div className="col-md-6"><button onClick={this.onClose} className="btn btn-warning app-btn">Close</button></div>
             </div>
             <div className={ this.props.msg}>
               <span className="alert alert-success"> Saved successfully</span>

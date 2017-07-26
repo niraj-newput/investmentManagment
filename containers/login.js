@@ -14,6 +14,18 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.submit  = this.submit.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+    this.state = {
+      className :'hidden',
+      msg : ''
+    };
+  }
+
+  changeHandler() {
+    this.setState({
+      className: 'hidden',
+      msg: ''
+    });
   }
 
   submit(user) {
@@ -24,12 +36,19 @@ class Login extends React.Component {
         dbConfig.putData(doc).then(function(response) {
           store.dispatch(employeeDetail(doc));
           self.props.history.push("/investment-form");
+          // self.props.history.push({pathname: "/investment-form", query: {obj: user}, search : '?email=' + user.email + '&pwd=' + user.password});
         });
       } else {
-        alert("Email or password do not match");
+        self.setState({
+          className: "show",
+          msg: "Invalid email or password"
+        });
       }
     }).catch(function(err) {
-      alert("Not authorised User! Please Registered First.");
+      self.setState({
+        className: "show",
+        msg: "Not authorised User! Please Registered First."
+      });
       console.log(err);
     });
   }
@@ -47,10 +66,13 @@ class Login extends React.Component {
               <Link to="/register"> Click here to Register</Link>
             </div>
             <Form onValidSubmit={this.submit} noValidate>
-              <Input name="email" label="Email"  validations="isEmail" validationError="Email is not valid" required/>
-              <Input name="password" type="password" label="Password" onChange={this.changeHandler} validations={{minLength: 8}} validationErrors={{minLength: 'Password must have 8 characters'}} required/>
+              <Input name="email" label="Email"  onChange={this.changeHandler} validations="isEmail" validationError="Email is not valid" required/>
+              <Input name="password" type="password" onChange={this.changeHandler } label="Password"  validations={{minLength: 8}} validationErrors={{minLength: 'Password must have 8 characters'}} required/>
               <div className="text-center">
                 <button type="submit" className="btn btn-primary app-btn">LogIn</button>
+              </div>
+              <div className={this.state.className + " text-center form-group error"}>
+                <span className=" alert alert-danger">{this.state.msg}</span>
               </div>
             </Form>
           </div>

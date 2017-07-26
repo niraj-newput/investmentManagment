@@ -8,13 +8,30 @@ export default class RegisterUser extends React.Component {
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+    this.state = {
+      className :'hidden',
+      msg : '',
+      msgClass: ''
+    };
+  }
+
+  changeHandler() {
+    this.setState({
+      className: 'hidden',
+      msg: ''
+    });
   }
 
   submit(model){
-    var _this = this;
+    var self = this;
     dbConfig.findByEmail(model.email).then(function(doc) {
       if(doc.docs.length > 0) {
-        alert('User already registered');
+        self.setState({
+          className: 'show',
+          msg: 'User already registered',
+          msgClass: 'alert-danger'
+        });
     } else {
         model['loggedIn'] = true;
         var doc = {
@@ -22,11 +39,18 @@ export default class RegisterUser extends React.Component {
           obj: model
         }
         dbConfig.putData(doc).then(function(response) {
-          alert('Registered Successfully');
-          _this.props.history.push('/investment-form');
+          self.setState({
+            className: 'show ',
+            msg: 'Registered Successfully',
+            msgClass: 'alert-success'
+          });
+          setTimeout(function(){
+          self.props.history.push('/investment-form');
+          }, 1000);
         });
-    }
+      }
     }).catch(function(err) {
+      console.log(err);
     });
   }
 
@@ -38,19 +62,22 @@ export default class RegisterUser extends React.Component {
         </div>
         <Form  onValidSubmit={this.submit} noValidate>
           <div className="form-group">
-            <Input name="email" label="Email address" validations="isEmail" placeholder="Email" value="" required/>
+            <Input name="email" label="Email address" onChange={this.changeHandler} validations="isEmail" placeholder="Email" value="" required/>
           </div>
           <div className="form-group">
-            <Input name="password" type="password" label="Password" validations="minLength:8" validationErrors={{minLength:'Password must have 8 characters'}} placeholder="Password" required/>
+            <Input name="password" type="password" onChange={this.changeHandler} label="Password" validations="minLength:8" validationErrors={{minLength:'Password must have 8 characters'}} placeholder="Password" required/>
           </div>
           <div className="form-group">
             <Input name="c_password" type="password" label="Confirm Password" validations="equalsField:password" validationError="Password does not match"  placeholder="Confirm Password" required/>
           </div>
           <div className="form-group">
-            <Input name="user_name" label="Full Name" validations="isWords" validationErrors={{isAlpha:'Enter only Characters'}} type="text" className="form-control" id="user_name" placeholder="User name" required/>
+            <Input name="user_name" label="Full Name" validations="isWords" validationErrors={{isAlpha:'Enter only Characters'}} type="text" className="form-control" id="user_name" placeholder="Full Name" required/>
           </div>
           <div className="form-group">
-            <button type="submit" className="btn btn-primary pull-right">Registration</button>
+            <button type="submit" className="btn btn-primary pull-right">Register</button>
+          </div>
+          <div className={this.state.className + " form-group text-center"}>
+            <span className={this.state.msgClass + " alert"}>{this.state.msg}</span>
           </div>
         </Form>
       </div>
