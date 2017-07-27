@@ -1,3 +1,12 @@
+.login-form {
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  margin: 100px auto;
+  padding: 50px 30px;
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.2);
+  width: 50%; }
+  .login-form .error {
+    margin-top: 20px; }
 .parent-container {
   margin: 50px auto 30px;
   border: 1px solid #000; }
@@ -12,13 +21,8 @@
     border-bottom: 1px solid lightgrey; }
   .parent-container .border-right {
     border-right: 1px solid lightgrey; }
-.login-form {
-  border: 1px solid lightgrey;
-  border-radius: 5px;
-  margin: 100px auto;
-  padding: 50px 30px;
-  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.2);
-  width: 50%; }
+  .parent-container .hover {
+    cursor: pointer; }
 #header {
   background-color: #F5F5F5;
   color: #777; }
@@ -26,10 +30,10 @@
     padding: 10px 15px; }
   #header .brand-img {
     height: 30px;
-    width: 50px; }
+    width: 130px; }
 
 .view-container {
-  min-height: 550px; }
+  min-height: 555px; }
   .view-container .app-btn {
     width: 150px; }
   .view-container .form-input-row {

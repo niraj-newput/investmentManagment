@@ -9,12 +9,12 @@ module.exports = {
     './index.js'
   ],
   output: {
-    path: '/public/assets/js',
+    path: __dirname + '/public/assets/js',
     filename: 'bundle.js',
     publicPath: '/'
   },
   plugins: [
-    new ExtractTextPlugin('./public/assets/css/app.css'),
+    new ExtractTextPlugin('../css/app.css'),
     new webpack.optimize.UglifyJsPlugin({
       minimize: true,
       compress: {

@@ -19,7 +19,7 @@ export class QuaterlyModal extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onClose = this.onClose.bind(this);
     this.state = {
-      btnState: true
+      btnState: true,
     };
   }
 

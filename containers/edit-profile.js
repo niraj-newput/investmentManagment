@@ -2,6 +2,7 @@ import React from 'react';
 import Formsy from 'formsy-react';
 import { Form, Input } from 'formsy-react-components';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import { store } from '../store.js';
 
 import { dbConfig } from '../services/pouchdb-service.js';
@@ -80,10 +81,18 @@ import "../public/assets/scss/invest-form.scss";
   render() {
     return (
       <div className="container">
+        <Helmet>
+            <title>Edit Profile</title>
+            <meta name="description" content="Edit Profile" />
+        </Helmet>
+        <div className="text-center form-group">
+          <h3>WelCome {this.state.user ? this.state.user.user_name : ''} !</h3>
+
+        </div>
         <div className="row">
           <div className="col-md-offset-3 col-md-6">
-            <div className="text-center">
-              <h3>WelCome User!</h3>
+            <div className="text-center form-group">
+              <strong>Change your password</strong>
             </div>
             <div>
               <Form onValidSubmit={this.submit} noValidate>
@@ -106,7 +115,7 @@ import "../public/assets/scss/invest-form.scss";
                     validations="equalsField:new_password" validationError="Password does not match"
                     placeholder="Confirm New Password" required
                 />
-                <div className="text-center">
+                <div className="text-center form-group">
                   <button type="submit" className="btn btn-primary app-btn">Save Changes</button>
                 </div>
               </Form>

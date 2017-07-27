@@ -20,38 +20,36 @@ class App extends React.Component {
     var self = this;
     self.props.dispatch(removeUser());
     dbConfig.findByLoggedInUser(true).then(function(doc) {
-        doc.docs[0].obj['loggedIn'] = false;
+      doc.docs[0].obj['loggedIn'] = false;
 
-        dbConfig.putData(doc.docs[0]).then(function(response) {
-          self.props.history.push('/login');
-        });
+      dbConfig.putData(doc.docs[0]).then(function(response) {
+        self.props.history.push('/login');
+      });
     }).catch(function(err) {
     });
   }
 
   componentWillMount() {
-    console.log('app');
-    console.log(this.props.children);
-      var self = this;
-      dbConfig.findByLoggedInUser(true).then(function(doc) {
-         if(doc.docs.length = 0) {
-             self.props.history.push('/login');
-         }
-      }).catch(function(err) {
-      });
-
+    var self = this;
+    dbConfig.findByLoggedInUser(true).then(function(doc) {
+       if(doc.docs.length = 0) {
+         self.props.history.push('/login');
+       }
+    }).catch(function(err) {
+    });
   }
+
   render() {
     return (
       <div>
         <Helmet>
-            <meta charSet="utf-8" />
-            <title>React App</title>
-            <meta name="description" content="App header" />
+          <meta charSet="utf-8" />
+          <title>React App</title>
+          <meta name="description" content="App header" />
         </Helmet>
         <Header logout={this.logout}/>
         <div className="view-container">
-            {this.props.children}
+          {this.props.children}
         </div>
         <Footer/>
       </div>

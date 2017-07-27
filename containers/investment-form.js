@@ -35,6 +35,8 @@ export default class InvestmentForm extends React.Component {
     var self = this;
     dbConfig.findByLoggedInUser(true).then(function(doc) {
       if(doc.docs.length > 0) {
+        console.log('componentDidMount invest');
+        console.log(store.getState());
         store.dispatch(employeeDetail(doc.docs[0]));
         self.loadUserData(doc.docs[0]);
       } else {
@@ -144,7 +146,7 @@ export default class InvestmentForm extends React.Component {
     });
     console.log('close');
     console.log(this);
-    
+
   }
 
   declearedModal() {
