@@ -33,7 +33,7 @@ export default class InvestmentForm extends React.Component {
     // var obj = queryString.parse(this.props.location.search);
     // console.log(obj);
     var self = this;
-    dbConfig.findByLoggedInUser(true).then(function(doc){
+    dbConfig.findByLoggedInUser(true).then(function(doc) {
       if(doc.docs.length > 0) {
         store.dispatch(employeeDetail(doc.docs[0]));
         self.loadUserData(doc.docs[0]);
@@ -142,6 +142,9 @@ export default class InvestmentForm extends React.Component {
       attachmentModalQ3: false,
       attachmentModalQ4: false
     });
+    console.log('close');
+    console.log(this);
+    
   }
 
   declearedModal() {

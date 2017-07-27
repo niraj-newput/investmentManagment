@@ -7,7 +7,7 @@ import {store} from "./store.js";
 import Login from './containers/login.js';
 import RegisterUser from './containers/register.js';
 import InvestmentForm from './containers/investment-form.js';
-
+import EditProfile from './containers/edit-profile.js';
 const routes = (
   <Provider store ={store}>
     <App>
@@ -16,6 +16,7 @@ const routes = (
         <Route exact path="/login" component={ Login }/>
         <Route exact path="/register" component={ RegisterUser }/>
         <Route exact path="/investment-form" component={ InvestmentForm }/>
+        <Route exact path="/edit-profile" component={ EditProfile }/>
       </Switch>
     </App>
   </Provider>

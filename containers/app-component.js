@@ -2,6 +2,7 @@ import React from "react";
 import { withRouter } from 'react-router-dom';
 import  Login  from "./login.js";
 import  RegisterUser  from "./register.js";
+import EditProfile from "./edit-profile.js";
 import { Header } from "../components/header.js";
 import { Footer } from "../components/footer.js";
 import { connect } from 'react-redux';
@@ -29,6 +30,8 @@ class App extends React.Component {
   }
 
   componentWillMount() {
+    console.log('app');
+    console.log(this.props.children);
       var self = this;
       dbConfig.findByLoggedInUser(true).then(function(doc) {
          if(doc.docs.length = 0) {

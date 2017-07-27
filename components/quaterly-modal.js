@@ -35,6 +35,8 @@ export class QuaterlyModal extends React.Component {
 
   onClose(e) {
     e.preventDefault();
+    console.log(this);
+    var obj = this.refs.modalForm;
     this.setState({btnState: true});
     this.props.modalClose();
   }
@@ -72,7 +74,7 @@ export class QuaterlyModal extends React.Component {
         size = "modal-md"
         isOpen = { this.props.open }
         contentLabel = "Modal"
-        ref="modal">
+        id="modal">
         <ModalHeader>
           <ModalClose onClick={this.props.modalClose}/>
           <ModalTitle>
@@ -80,7 +82,7 @@ export class QuaterlyModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.setState({btnState: true});}} noValidate >
+          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.setState({btnState: true});}}  id="modalForm" noValidate >
             <Input name="hm_ln" label="Home Loan interest" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,isSetPrecision" validationErrors={{isNumeric:"Enter only number", isSetPrecision: 'Enter only 2 digit after decimal'}} value={ (this.props.qObj && this.props.qObj["hm_ln"] != '0') ? this.props.qObj["hm_ln"] : '' } />
             <Input name="med" label="Medicals Bills" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric" validationErrors={{isNumeric:"Enter only number"}} value={(this.props.qObj && this.props.qObj["med"] != '0') ? this.props.qObj["med"] : ''} />
             <div>

@@ -12,15 +12,21 @@ export const Header = ((props) => {
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
           </button>
-          <a className="navbar-brand"><img className="brand-img" src="../public/assets/images/company_logo.png" alt="brand"/></a>
+          <a className="navbar-brand"><img className="brand-img" src="public/assets/images/company_logo.png" alt="brand"/></a>
           <span className="navbar-brand">Investment Management</span>
        </div>
        <div className="collapse navbar-collapse" id="app-navbar-collapse">
            {store.getState().employee && store.getState().employee.employee ?
-               <ul className="nav navbar-nav navbar-right">
-                 <li><a>{store.getState().employee.employee.obj.user_name}</a></li>
+           <ul className="nav navbar-nav navbar-right">
+             <li><a>{store.getState().employee.employee.obj.user_name}</a></li>
+             <li className="dropdown">
+               <a className="dropdown-toggle" data-toggle="dropdown"><i className="fa fa-cog fa-2x" aria-hidden="true"></i></a>
+               <ul id="dropdown-menu" className="dropdown-menu">
+                 <li><Link to="/edit-profile">Edit Profile</Link></li>
                  <li><a onClick={() => props.logout()}><span className="glyphicon glyphicon-log-out"></span>LogOut</a></li>
-               </ul> : null}
+               </ul>
+             </li>
+            </ul> : null}
        </div>
      </div>
    </nav>
