@@ -47,6 +47,8 @@ export default class RegisterUser extends React.Component {
           setTimeout(function(){
           self.props.history.push('/investment-form');
           }, 1000);
+        }).catch(function(err) {
+          console.log(err);
         });
       }
     }).catch(function(err) {

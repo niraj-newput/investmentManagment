@@ -40,7 +40,6 @@ import "../public/assets/scss/invest-form.scss";
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     var self = this;
     dbConfig.findByLoggedInUser(true).then(function(doc) {
       if(doc.docs.length > 0) {
@@ -60,9 +59,7 @@ import "../public/assets/scss/invest-form.scss";
     var currentuser = store.getState().employee;
     currentuser.employee.obj['password'] = model.new_password;
     dbConfig.putData(currentuser.employee).then(function(response) {
-      console.log(response);
       dbConfig.findByEmail(response.id).then(function(doc) {
-        console.log(doc);
         store.dispatch(employeeDetail(doc.docs[0]));
       });
       self.setState({

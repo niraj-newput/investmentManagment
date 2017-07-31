@@ -35,7 +35,6 @@ export class QuaterlyModal extends React.Component {
 
   onClose(e) {
     e.preventDefault();
-    console.log(this);
     var obj = this.refs.modalForm;
     this.setState({btnState: true});
     this.props.modalClose();

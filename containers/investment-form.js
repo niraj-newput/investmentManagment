@@ -1,12 +1,16 @@
 import React from 'react';
 import Formsy from 'formsy-react';
+import {Form, Input, Select} from 'formsy-react-components';
 import { Helmet } from 'react-helmet';
 import queryString from 'query-string';
+import CSSModules from 'react-css-modules';
+import moment from 'moment';
 import { store } from '../store.js';
 import { DeclearedModal } from '../components/decleared-modal.js';
 import { employeeDetail } from '../actions/employee-action.js';
 import { QuaterlyModal } from '../components/quaterly-modal.js';
 import { dbConfig } from '../services/pouchdb-service.js';
+
 import "../public/assets/scss/invest-form.scss";
 
 export default class InvestmentForm extends React.Component {
@@ -21,22 +25,32 @@ export default class InvestmentForm extends React.Component {
     this.quaterlyData = this.quaterlyData.bind(this);
     this.deleteAttachment = this.deleteAttachment.bind(this);
     this.loadUserData = this.loadUserData.bind(this);
+    this.showOptions = this.showOptions.bind(this);
+    this.selectYear = this.selectYear.bind(this);
+
+    var currentYear = new Date().getFullYear();
+    var currentFi = (currentYear + '-' + (currentYear + 1)) ;
     this.state = {
       declearedModal: false,
-      msg: 'hidden'
+      msg: 'hidden',
+      financialYear: currentFi
     }
+
+  }
+
+  componentWillMount() {
+    var arr = [];
+    var currentYear = new Date().getFullYear();
+    var yr = {value : ( (currentYear - 1)+ '-' + currentYear) , label: ((currentYear - 1) + '-' + currentYear)};
+    arr.push(yr);
+    yr = {value : (currentYear + '-' + (currentYear + 1)) , label: (currentYear + '-' + (currentYear + 1))};
+    arr.push(yr);
   }
 
   componentDidMount() {
-    // console.log(this.props.location.query);
-    // console.log(this.props.location.search);
-    // var obj = queryString.parse(this.props.location.search);
-    // console.log(obj);
     var self = this;
     dbConfig.findByLoggedInUser(true).then(function(doc) {
       if(doc.docs.length > 0) {
-        console.log('componentDidMount invest');
-        console.log(store.getState());
         store.dispatch(employeeDetail(doc.docs[0]));
         self.loadUserData(doc.docs[0]);
       } else {
@@ -47,9 +61,25 @@ export default class InvestmentForm extends React.Component {
     });
   }
 
+  showOptions() {
+    var arr = [];
+    var currentYear = new Date().getFullYear();
+    arr.push(<option key={Math.random()} value={((currentYear - 1)  + '-') + currentYear} selected={this.state.financialYear == (((currentYear - 1)  + '-') + currentYear) }>{((currentYear - 1)  + '-') + currentYear}</option>);
+    arr.push(<option key={Math.random()} value={(currentYear + '-' )   + (currentYear + 1)} selected={this.state.financialYear == ((currentYear + '-' )   + (currentYear + 1))}>{(currentYear + '-' )   + (currentYear + 1)}</option>);
+    return (arr)
+  }
+
   showFinancialYear() {
     var currentYear = new Date().getFullYear();
     return ((currentYear + ' - ') + ( currentYear + 1) );
+  }
+
+  selectYear(event) {
+    var value = event.target.value;
+    this.setState({
+      financialYear: value
+    });
+    this.componentDidMount();
   }
 
   fileRead(id, file, rev) {
@@ -75,17 +105,22 @@ export default class InvestmentForm extends React.Component {
   loadUserData(value) {
     var self = this;
     dbConfig.getData(value.obj.email).then(function(doc) {
-
       var totalInfo = {hm_ln: 0, med: 0, lic: 0, bank: 0, ppf: 0, mutual_fund: 0, hm_ln_pr: 0, tf_child: 0, hos_in_med: 0, edu_ln: 0};
-      if(doc.q1) {
-        totalInfo = self.totalQuaterlyAmount(doc.q1, totalInfo);
-      } if(doc.q2) {
-        totalInfo = self.totalQuaterlyAmount(doc.q2, totalInfo);
-      } if(doc.q3) {
-        totalInfo = self.totalQuaterlyAmount(doc.q3, totalInfo);
-      } if(doc.q4) {
-        totalInfo = self.totalQuaterlyAmount(doc.q4, totalInfo);
+      if(doc.year) {
+        if(doc.year[self.state.financialYear]) {
+          if(doc.year[self.state.financialYear].q1) {
+            totalInfo = self.totalQuaterlyAmount(doc.year[self.state.financialYear].q1, totalInfo);
+          } if(doc.year[self.state.financialYear].q2) {
+            totalInfo = self.totalQuaterlyAmount(doc.year[self.state.financialYear].q2, totalInfo);
+          } if(doc.year[self.state.financialYear].q3) {
+            totalInfo = self.totalQuaterlyAmount(doc.year[self.state.financialYear].q3, totalInfo);
+          } if(doc.year[self.state.financialYear].q4) {
+            totalInfo = self.totalQuaterlyAmount(doc.year[self.state.financialYear].q4, totalInfo);
+          }
+        }
       }
+
+
       var q1Attachments = [], q2Attachments = [], q3Attachments = [], q4Attachments = [] ;
        if(doc._attachments) {
          var promises = [];
@@ -93,7 +128,9 @@ export default class InvestmentForm extends React.Component {
 
          for(var i = 0; i < attachments.length; i++) {
            var file = attachments[i];
-           promises.push(self.fileRead(doc._id, file, doc._rev));
+           if(file.indexOf(self.state.financialYear) != -1) {
+             promises.push(self.fileRead(doc._id, file, doc._rev));
+           }
          }
          Promise.all(promises).then(function(value) {
           for(var i = 0; i < value.length; i++) {
@@ -118,11 +155,11 @@ export default class InvestmentForm extends React.Component {
         }
       self.setState({
         user: doc,
-        declearedInfo: doc.declareData ? doc.declareData : null,
-        q1: doc.q1 ? doc.q1 : null,
-        q2: doc.q2 ? doc.q2 : null,
-        q3: doc.q3 ? doc.q3 : null,
-        q4: doc.q4 ? doc.q4 : null,
+        declearedInfo: doc.year && doc.year[self.state.financialYear] ? doc.year[self.state.financialYear].declareData : null,
+        q1: doc.year ? doc.year[self.state.financialYear].q1 : null,
+        q2: doc.year ? doc.year[self.state.financialYear].q2 : null,
+        q3: doc.year ? doc.year[self.state.financialYear].q3 : null,
+        q4: doc.year ? doc.year[self.state.financialYear].q4 : null,
         totalBlockData : totalInfo,
         q1Attachments: q1Attachments,
         q2Attachments: q2Attachments,
@@ -144,9 +181,6 @@ export default class InvestmentForm extends React.Component {
       attachmentModalQ3: false,
       attachmentModalQ4: false
     });
-    console.log('close');
-    console.log(this);
-
   }
 
   declearedModal() {
@@ -206,10 +240,15 @@ export default class InvestmentForm extends React.Component {
   }
 
   declearData(model) {
-    this.state.user['declareData'] = model;
-    dbConfig.putData(this.state.user).then(function(result) {
-      dbConfig.getData(result.id).then(function (doc) {
-      });
+    var self = this;
+    var user = store.getState().employee.employee;
+    if(!user.year) {
+      user['year'][this.state.financialYear]['declareData'] = model;
+    }else {
+      user['year'][this.state.financialYear] = {'declareData' : model};
+    }
+    // this.state.user['declareData'] = model;
+    dbConfig.putData(user).then(function(result) {
     });
     this.closeModal();
     this.componentDidMount();
@@ -244,8 +283,8 @@ export default class InvestmentForm extends React.Component {
     var self = this;
     var promises = [];
     model = self.prepareModel(model);
-    console.log(model);
-    self.state.user[quaterno] = model;
+    self.state.user.year[this.state.financialYear][quaterno] = model;
+    //self.state.user.year[quaterno] = model;
     if(model.file ) {
       for(var i = 0; i < model.file.length; i++) {
         var a = this.fileLoad(model.file[i]);
@@ -256,11 +295,11 @@ export default class InvestmentForm extends React.Component {
         var attachmentObj = {};
         if(  self.state.user._attachments) {
           for(var i = 0; i < value.length; i++) {
-            self.state.user._attachments[quaterno + '.' + value[i]['name']] = value[i];
+            self.state.user._attachments[self.state.financialYear + '.' + quaterno + '.' + value[i]['name']] = value[i];
           }
         }else {
           for(var i = 0; i < value.length; i++) {
-            attachmentObj[quaterno + '.' +value[i]['name']] = value[i];
+            attachmentObj[self.state.financialYear + '.' + quaterno + '.' +value[i]['name']] = value[i];
           }
           self.state.user['_attachments'] = attachmentObj;
         }
@@ -316,7 +355,12 @@ export default class InvestmentForm extends React.Component {
           <div className="row border-bottom">
             <h3 className="text-center">NEWPUT INFOTECH PVT LTD</h3>
             <h4 className="text-center">314 DM TOWER, 21/1 RACE COURSE ROAD, INDORE</h4>
-            <h5 className="text-center">Investment Details For {this.showFinancialYear()}</h5>
+            <h5 className="text-center">Investment Details For :
+
+              <select name="year" onChange = {this.selectYear}>
+                {this.showOptions()}
+              </select>
+            </h5>
           </div>
           <div className="row border-bottom">
             <div className="col-md-3 border-right cell"><span>Name Of Employee</span></div>
