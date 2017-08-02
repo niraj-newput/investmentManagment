@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.2",
     "express": "^4.13.4",
     "extract-text-webpack-plugin": "^2.1.2",
     "formsy-react": "^0.19.5",

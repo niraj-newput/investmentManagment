@@ -1,4 +1,4 @@
-import React from "react";
+import React , { PropTypes } from "react";
 import { withRouter } from 'react-router-dom';
 import  Login  from "./login.js";
 import  RegisterUser  from "./register.js";
@@ -56,6 +56,7 @@ class App extends React.Component {
     );
   }
 }
+
 
 const mapStateToProps = (state) => {
   return {

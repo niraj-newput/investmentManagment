@@ -20,6 +20,14 @@ export class DeclearedModal extends React.Component {
 
   onClose(e) {
     e.preventDefault();
+    var resetObj = {};
+    if(this.props.declareObj) {
+      var key = Object.keys(this.props.declareObj);
+      for(var i = 0; i < key.length; i++) {
+        resetObj[key[i]] = this.props.declareObj[key[i]] != "0" ? this.props.declareObj[key[i]] : '';
+      }
+    }
+    this.refs.declareForm.refs.formsy.reset(resetObj);
     this.setState({btnState: true});
     this.props.modalClose();
   }
@@ -29,7 +37,7 @@ export class DeclearedModal extends React.Component {
       <Modal
         size = "modal-md"
         isOpen = { this.props.open }
-        contentLabel = "Modal" >
+        contentLabel = "Modal">
         <ModalHeader>
           <ModalClose onClick={this.props.modalClose}/>
           <ModalTitle>
@@ -37,7 +45,7 @@ export class DeclearedModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model);}}   noValidate >
+          <Form onValidSubmit={(model) => { this.props.update(model);}}  ref="declareForm" noValidate >
             <Input name="hm_ln" label="Home Loan Interest" onChange={this.onChange} rowClassName="form-input-row" labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} validations="isNumeric,maxLength:6" validationErrors={{isNumeric:"Enter only number", maxLength:"It should not exceed 200000"}} value={this.props.declareObj ? this.props.declareObj.hm_ln : '' } />
             <Input name="med" label="Medicals Bills" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,maxLength:5" validationErrors={{isNumeric:"Enter only number", maxLength:"It should not exceed 15000"}} value={this.props.declareObj ? this.props.declareObj.med : '' } />
             <div>

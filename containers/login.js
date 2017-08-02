@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Formsy from 'formsy-react';
 import { Link, Redirect ,hashHistory} from 'react-router-dom';
 import { Form, Input } from 'formsy-react-components';
 import {Helmet} from 'react-helmet';
+import axios from 'axios';
 
 import { employeeDetail } from '../actions/employee-action.js';
 import { dbConfig } from '../services/pouchdb-service.js';
@@ -11,8 +12,8 @@ import '../public/assets/scss/login-form.scss';
 
 
 class Login extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.submit  = this.submit.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
     this.state = {
@@ -67,7 +68,7 @@ class Login extends React.Component {
             </div>
             <Form onValidSubmit={this.submit} noValidate>
               <Input name="email" label="Email"  onChange={this.changeHandler} validations="isEmail" validationError="Email is not valid" required/>
-              <Input name="password" type="password" onChange={this.changeHandler } label="Password"  validations={{minLength: 8}} validationErrors={{minLength: 'Password must have 8 characters'}} required/>
+              <Input name="password" type="password" onChange={this.changeHandler } label="Password"  validations={{minLength: 3}} validationErrors={{minLength: 'Password must have 8 characters'}} required/>
               <div className="text-center">
                 <button type="submit" className="btn btn-primary app-btn">LogIn</button>
               </div>

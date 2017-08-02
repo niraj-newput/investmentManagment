@@ -3,12 +3,13 @@ import Formsy from 'formsy-react';
 import {Form, Input, Select} from 'formsy-react-components';
 import { Helmet } from 'react-helmet';
 import queryString from 'query-string';
+
 import CSSModules from 'react-css-modules';
 import moment from 'moment';
 import { store } from '../store.js';
 import { DeclearedModal } from '../components/decleared-modal.js';
 import { employeeDetail } from '../actions/employee-action.js';
-import { QuaterlyModal } from '../components/quaterly-modal.js';
+import { QuaterlyModal, name } from '../components/quaterly-modal.js';
 import { dbConfig } from '../services/pouchdb-service.js';
 
 import "../public/assets/scss/invest-form.scss";
@@ -35,16 +36,6 @@ export default class InvestmentForm extends React.Component {
       msg: 'hidden',
       financialYear: currentFi
     }
-
-  }
-
-  componentWillMount() {
-    var arr = [];
-    var currentYear = new Date().getFullYear();
-    var yr = {value : ( (currentYear - 1)+ '-' + currentYear) , label: ((currentYear - 1) + '-' + currentYear)};
-    arr.push(yr);
-    yr = {value : (currentYear + '-' + (currentYear + 1)) , label: (currentYear + '-' + (currentYear + 1))};
-    arr.push(yr);
   }
 
   componentDidMount() {
@@ -67,11 +58,6 @@ export default class InvestmentForm extends React.Component {
     arr.push(<option key={Math.random()} value={((currentYear - 1)  + '-') + currentYear} selected={this.state.financialYear == (((currentYear - 1)  + '-') + currentYear) }>{((currentYear - 1)  + '-') + currentYear}</option>);
     arr.push(<option key={Math.random()} value={(currentYear + '-' )   + (currentYear + 1)} selected={this.state.financialYear == ((currentYear + '-' )   + (currentYear + 1))}>{(currentYear + '-' )   + (currentYear + 1)}</option>);
     return (arr)
-  }
-
-  showFinancialYear() {
-    var currentYear = new Date().getFullYear();
-    return ((currentYear + ' - ') + ( currentYear + 1) );
   }
 
   selectYear(event) {
@@ -156,10 +142,10 @@ export default class InvestmentForm extends React.Component {
       self.setState({
         user: doc,
         declearedInfo: doc.year && doc.year[self.state.financialYear] ? doc.year[self.state.financialYear].declareData : null,
-        q1: doc.year ? doc.year[self.state.financialYear].q1 : null,
-        q2: doc.year ? doc.year[self.state.financialYear].q2 : null,
-        q3: doc.year ? doc.year[self.state.financialYear].q3 : null,
-        q4: doc.year ? doc.year[self.state.financialYear].q4 : null,
+        q1: doc.year && doc.year[self.state.financialYear] ? doc.year[self.state.financialYear].q1 : null,
+        q2: doc.year && doc.year[self.state.financialYear] ? doc.year[self.state.financialYear].q2 : null,
+        q3: doc.year && doc.year[self.state.financialYear] ? doc.year[self.state.financialYear].q3 : null,
+        q4: doc.year && doc.year[self.state.financialYear] ? doc.year[self.state.financialYear].q4 : null,
         totalBlockData : totalInfo,
         q1Attachments: q1Attachments,
         q2Attachments: q2Attachments,
@@ -243,7 +229,12 @@ export default class InvestmentForm extends React.Component {
     var self = this;
     var user = store.getState().employee.employee;
     if(!user.year) {
-      user['year'][this.state.financialYear]['declareData'] = model;
+     let year = {
+          [self.state.financialYear]: {
+            'declareData' : model
+          }
+      }
+      user['year'] = year;
     }else {
       user['year'][this.state.financialYear] = {'declareData' : model};
     }
@@ -330,13 +321,7 @@ export default class InvestmentForm extends React.Component {
     var self = this;
     dbConfig.getData(self.state.user.obj.email).then(function(doc) {
       dbConfig.deleteAttachment(doc._id, fileName, doc._rev).then(function (result) {
-        dbConfig.getData(self.state.user.obj.email).then(function (doc) {
-          store.dispatch(employeeDetail(doc));
-          self.setState({
-            user : doc
-          });
-          self.componentDidMount();
-        });
+        self.componentDidMount();
       }).catch(function (error) {
           console.log(error);
       });
@@ -350,14 +335,13 @@ export default class InvestmentForm extends React.Component {
             <title>Investment Form</title>
             <meta name="description" content="Investment form" />
         </Helmet>
-
         <div className="container parent-container">
           <div className="row border-bottom">
             <h3 className="text-center">NEWPUT INFOTECH PVT LTD</h3>
             <h4 className="text-center">314 DM TOWER, 21/1 RACE COURSE ROAD, INDORE</h4>
-            <h5 className="text-center">Investment Details For :
+            <h5 className="text-center">Investment Details For : &nbsp;
 
-              <select name="year" onChange = {this.selectYear}>
+              <select name="year" onChange = {this.selectYear} className="input-sm">
                 {this.showOptions()}
               </select>
             </h5>
@@ -384,21 +368,21 @@ export default class InvestmentForm extends React.Component {
             </div>
             <div className="col-md-1 border-right cell">
               <span onClick={()=> this.quaterlyModalOpen('q1')}>Apr-June <i className="fa fa-pencil-square-o hover" aria-hidden="true"></i></span>
-              <QuaterlyModal open={this.state.qOne} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q1'} quaterName="Apr-June" qObj={this.state.q1} files={this.state.q1Attachments ? this.state.q1Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
+              <QuaterlyModal open={this.state.qOne} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q1'} quaterName="Apr-June" qObj={this.state.q1} files={this.state.q1Attachments ? this.state.q1Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg} year={this.state.financialYear}/>
             </div>
             <div className="col-md-1 border-right cell">
                <span>Jul-Sept</span>
                <span onClick={()=> this.quaterlyModalOpen('q2')}> <i className="fa fa-pencil-square-o hover" aria-hidden="true"></i></span>
-               <QuaterlyModal open={this.state.qTwo} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q2'} quaterName="Jul-Sept" qObj={this.state.q2} files={this.state.q2Attachments ? this.state.q2Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
+               <QuaterlyModal open={this.state.qTwo} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q2'} quaterName="Jul-Sept" qObj={this.state.q2} files={this.state.q2Attachments ? this.state.q2Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg} year={this.state.financialYear}/>
             </div>
             <div className="col-md-1 border-right cell">
               <span>Oct-Dec</span>
               <span onClick={()=> this.quaterlyModalOpen('q3')}> <i className="fa fa-pencil-square-o hover" aria-hidden="true"></i></span>
-              <QuaterlyModal open={this.state.qThree} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q3'} quaterName="Oct-Dec" qObj={this.state.q3} files={this.state.q3Attachments ? this.state.q3Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
+              <QuaterlyModal open={this.state.qThree} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q3'} quaterName="Oct-Dec" qObj={this.state.q3} files={this.state.q3Attachments ? this.state.q3Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg} year={this.state.financialYear}/>
             </div>
             <div className="col-md-1 border-right cell">
               <span onClick={()=> this.quaterlyModalOpen('q4')}> Jan-Mar <i className="fa fa-pencil-square-o hover" aria-hidden="true"></i></span>
-              <QuaterlyModal open={this.state.qFour} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q4'} quaterName="Jan-Mar" qObj={this.state.q4} files={this.state.q4Attachments ? this.state.q4Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg}/>
+              <QuaterlyModal open={this.state.qFour} modalClose={this.closeModal} update={this.quaterlyData} quaterNo={'q4'} quaterName="Jan-Mar" qObj={this.state.q4} files={this.state.q4Attachments ? this.state.q4Attachments : null} deleteFile={this.deleteAttachment} msg={this.state.msg} year={this.state.financialYear}/>
             </div>
             <div className="col-md-1 cell">
               <span>Total</span>

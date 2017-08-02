@@ -5,6 +5,7 @@ import Confirm from "react-confirm-bootstrap";
 import {Modal, ModalHeader, ModalBody, ModalTitle, ModalFooter, ModalClose} from 'react-modal-bootstrap';
 
 import {Form, Input, File, Select} from 'formsy-react-components';
+
 Formsy.addValidationRule('isSetPrecision', function(values, value) {
   if(value.indexOf('.') != -1) {
     return ((value.slice((value.indexOf('.')+ 1), value.length).length) > 2 ? false : true);
@@ -33,9 +34,17 @@ export class QuaterlyModal extends React.Component {
     this.props.deleteFile(fileName);
   }
 
-  onClose(e) {
-    e.preventDefault();
-    var obj = this.refs.modalForm;
+  onClose(event) {
+    event.preventDefault();
+    var resetObj = {};
+    if(this.props.qObj) {
+      var key = Object.keys(this.props.qObj);
+      for(var i = 0; i < key.length; i++) {
+        resetObj[key[i]] = this.props.qObj[key[i]] != "0" ? this.props.qObj[key[i]] : '';
+      }
+    }
+
+    this.refs.modalForm.refs.formsy.reset(resetObj);
     this.setState({btnState: true});
     this.props.modalClose();
   }
@@ -47,7 +56,7 @@ export class QuaterlyModal extends React.Component {
         attachments = this.props.files.map(function(file) {
          return (<div key={Math.random()} className="row">
            <div className="col-sm-8">
-              <span>{file.name.replace(self.props.quaterNo+ ".", "")}</span>
+              <span>{file.name.replace( (self.props.year + '.' +self.props.quaterNo + "."), "")}</span>
            </div>
            <div className="col-sm-2">
               <a href={file.url} target="_blank">View</a>
@@ -58,7 +67,7 @@ export class QuaterlyModal extends React.Component {
              body="Are you sure you want to delete this file?"
              confirmText="Confirm Delete"
              title="Deleting Stuff">
-             <i className="fa fa-trash-o" aria-hidden="true"></i>
+             <i className="fa fa-trash-o" aria-hidden="true" ></i>
            </Confirm>
            </div>
          </div>);
@@ -73,7 +82,7 @@ export class QuaterlyModal extends React.Component {
         size = "modal-md"
         isOpen = { this.props.open }
         contentLabel = "Modal"
-        id="modal">
+        ref="modal">
         <ModalHeader>
           <ModalClose onClick={this.props.modalClose}/>
           <ModalTitle>
@@ -81,8 +90,8 @@ export class QuaterlyModal extends React.Component {
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.setState({btnState: true});}}  id="modalForm" noValidate >
-            <Input name="hm_ln" label="Home Loan interest" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,isSetPrecision" validationErrors={{isNumeric:"Enter only number", isSetPrecision: 'Enter only 2 digit after decimal'}} value={ (this.props.qObj && this.props.qObj["hm_ln"] != '0') ? this.props.qObj["hm_ln"] : '' } />
+          <Form onValidSubmit={(model) => { this.props.update(model,this.props.quaterNo); this.setState({btnState: true});}}  ref="modalForm" noValidate >
+            <Input name="hm_ln" label="Home Loan interest" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric,isSetPrecision" validationErrors={{isNumeric:"Enter only number", isSetPrecision: 'Enter only 2 digit after decimal'}} value={(this.props.qObj && this.props.qObj["hm_ln"] != '0') ? this.props.qObj["hm_ln"] : '' } />
             <Input name="med" label="Medicals Bills" onChange={this.onChange} labelClassName={[{'col-sm-3': false}, 'col-sm-5']} elementWrapperClassName={[{'col-sm-9': false}, 'col-sm-7']} rowClassName="form-input-row" validations="isNumeric" validationErrors={{isNumeric:"Enter only number"}} value={(this.props.qObj && this.props.qObj["med"] != '0') ? this.props.qObj["med"] : ''} />
             <div>
               <span>Excemption 80 C</span>

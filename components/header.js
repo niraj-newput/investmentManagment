@@ -22,7 +22,7 @@ export const Header = ((props) => {
              <li className="dropdown">
                <a className="dropdown-toggle" data-toggle="dropdown"><i className="fa fa-cog fa-2x" aria-hidden="true"></i></a>
                <ul id="dropdown-menu" className="dropdown-menu">
-                 <li><Link to="/edit-profile">Edit Profile</Link></li>
+                 <li><Link to="/edit-profile">Change Password</Link></li>
                  <li><a onClick={() => props.logout()}><span className="glyphicon glyphicon-log-out"></span>LogOut</a></li>
                </ul>
              </li>
