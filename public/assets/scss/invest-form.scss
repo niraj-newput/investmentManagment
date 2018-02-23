@@ -1,0 +1,22 @@
+.parent-container {
+  margin: 50px auto 30px;
+  border: 1px solid #000;
+   div {
+    min-height: 45px;
+    text-align: center;
+  }
+  .cell {
+    min-height: 45px;
+    padding: 12px 0px;
+    text-align: center;
+  }
+  .border-bottom {
+    border-bottom: 1px solid lightgrey;
+  }
+  .border-right {
+    border-right: 1px solid lightgrey;
+  }
+  .hover {
+    cursor: pointer;
+  }
+}

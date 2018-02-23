@@ -1,9 +1,14 @@
-const path = require('path');
+var path = require('path');
+const webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 module.exports = {
-  entry: './app.js',
+  devtool: 'eval',
+  entry: './index.js',
   output: {
-    filename: 'bundle.js'
+    path: '/public/assets/js',
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   module: {
     loaders: [
@@ -13,16 +18,17 @@ module.exports = {
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
           use: ['css-loader', 'sass-loader']
-        }) 
+        })
       }
     ]
   },
   plugins: [
-      new ExtractTextPlugin('./assets/css/app.css')
+      new ExtractTextPlugin('./public/assets/css/app.css'),
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.NoEmitOnErrorsPlugin()
     ],
   devServer: {
     historyApiFallback: true,
     contentBase: './'
   }
- 
 }
